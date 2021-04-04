@@ -107,6 +107,9 @@
         },
         {
             "m_Id": "a7367639eba3499ab9b043506093f5fa"
+        },
+        {
+            "m_Id": "84c6e431d3af428795454bcae6d0bed4"
         }
     ],
     "m_GroupDatas": [],
@@ -339,8 +342,8 @@
     ],
     "m_VertexContext": {
         "m_Position": {
-            "x": 302.9999694824219,
-            "y": 121.00000762939453
+            "x": 385.99993896484377,
+            "y": 122.99998474121094
         },
         "m_Blocks": [
             {
@@ -356,8 +359,8 @@
     },
     "m_FragmentContext": {
         "m_Position": {
-            "x": 302.9999694824219,
-            "y": 320.9999694824219
+            "x": 385.99993896484377,
+            "y": 323.0
         },
         "m_Blocks": [
             {
@@ -411,10 +414,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -421.2823791503906,
-            "y": 208.35987854003907,
-            "width": 0.0,
-            "height": 0.0
+            "x": -298.9999694824219,
+            "y": 310.0,
+            "width": 132.0,
+            "height": 34.000003814697269
         }
     },
     "m_Slots": [
@@ -915,10 +918,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 73.0,
-            "y": 442.9999694824219,
+            "x": 156.00001525878907,
+            "y": 445.0000305175781,
             "width": 117.0,
-            "height": 34.0
+            "height": 34.000003814697269
         }
     },
     "m_Slots": [
@@ -974,10 +977,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 48.00001525878906,
-            "y": 485.9999694824219,
+            "x": 130.9999237060547,
+            "y": 488.0000305175781,
             "width": 142.0,
-            "height": 34.0
+            "height": 34.000003814697269
         }
     },
     "m_Slots": [
@@ -1223,8 +1226,8 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -190.5626220703125,
-            "y": 296.4374084472656,
+            "x": -129.00001525878907,
+            "y": 324.0,
             "width": 208.0,
             "height": 302.0
         }
@@ -1265,12 +1268,57 @@
 {
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
+    "m_ObjectId": "711b8f393fa1489a97fc4c4749c1d0af",
+    "m_Id": 1,
+    "m_DisplayName": "a",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "a",
+    "m_StageCapability": 3,
+    "m_Value": 0.0,
+    "m_DefaultValue": 0.0,
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
+    "m_ObjectId": "7143a774d2a2492f966d1368c991a8a5",
+    "m_Id": 0,
+    "m_DisplayName": "Out",
+    "m_SlotType": 1,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "Out",
+    "m_StageCapability": 3,
+    "m_Value": 0.0,
+    "m_DefaultValue": 0.0,
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "7172b72c0636408892da461445262d00",
     "m_Id": 1189388722,
     "m_DisplayName": "DissolveInput",
     "m_SlotType": 0,
     "m_Hidden": false,
     "m_ShaderOutputName": "Vector1_a59b22ca29e44827a938076e04db68d3",
+    "m_StageCapability": 3,
+    "m_Value": 0.0,
+    "m_DefaultValue": 0.0,
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
+    "m_ObjectId": "776063162e73459fa186fa5483d89992",
+    "m_Id": 2,
+    "m_DisplayName": "b",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "b",
     "m_StageCapability": 3,
     "m_Value": 0.0,
     "m_DefaultValue": 0.0,
@@ -1414,6 +1462,48 @@
         "z": 0.0,
         "w": 0.0
     }
+}
+
+{
+    "m_SGVersion": 1,
+    "m_Type": "UnityEditor.ShaderGraph.CustomFunctionNode",
+    "m_ObjectId": "84c6e431d3af428795454bcae6d0bed4",
+    "m_Group": {
+        "m_Id": ""
+    },
+    "m_Name": "OutDissolver (Custom Function)",
+    "m_DrawState": {
+        "m_Expanded": true,
+        "m_Position": {
+            "serializedVersion": "2",
+            "x": -1172.9998779296875,
+            "y": 821.9999389648438,
+            "width": 225.0,
+            "height": 301.9999694824219
+        }
+    },
+    "m_Slots": [
+        {
+            "m_Id": "711b8f393fa1489a97fc4c4749c1d0af"
+        },
+        {
+            "m_Id": "776063162e73459fa186fa5483d89992"
+        },
+        {
+            "m_Id": "7143a774d2a2492f966d1368c991a8a5"
+        }
+    ],
+    "synonyms": [],
+    "m_Precision": 0,
+    "m_PreviewExpanded": true,
+    "m_PreviewMode": 0,
+    "m_CustomColors": {
+        "m_SerializableColors": []
+    },
+    "m_SourceType": 0,
+    "m_FunctionName": "OutDissolver",
+    "m_FunctionSource": "d29e6ba547743974090824713ec2ba79",
+    "m_FunctionBody": "Enter function body here..."
 }
 
 {
