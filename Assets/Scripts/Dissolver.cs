@@ -32,6 +32,11 @@ public class Dissolver : MonoBehaviour
     private float _edgeFadeOut = 0.52f;
 
     [SerializeField]
+    private MeshFilter _targetMeshFilter;
+
+    private Mesh _targetMesh;
+
+    [SerializeField]
     private MeshRenderer _debugPlaneMeshRenderer;
 
     // [SerializeField]
@@ -47,25 +52,43 @@ public class Dissolver : MonoBehaviour
 
     private int kernelID;
 
+    private ComputeBuffer _verticesBuffer;
+
     // Start is called before the first frame update
     void Start()
     {
-        _destMap = new RenderTexture(
+        // init textures
+
+        _destMap = CreateTexture(
             _dissolveMap.width,
-            _dissolveMap.height,
-            0,
-            RenderTextureFormat.ARGB32,
-            RenderTextureReadWrite.Linear
+            _dissolveMap.height
         );
-        _destMap.enableRandomWrite = true;
         _destMap.Create();
 
+        // init member
+
+        _targetMesh = _targetMeshFilter.mesh;
+
+        // init buffer
+
+        Debug.Log("-----------------------");
+        Debug.Log(_targetMesh.vertices);
+        Vector3[] vertices = _targetMesh.vertices;
+        Debug.Log(vertices.Length);
+        Debug.Log("-----------------------");
+        _verticesBuffer = new ComputeBuffer(vertices.Length, sizeof(float) * 3);
+        _verticesBuffer.SetData(vertices);
+
+        // init compute shader
+
         kernelID = _computeShader.FindKernel("CSMain");
+
+        // _computeShader.SetBuffer(kernelID, "Triangles", _verticesBuffer);
 
         _computeShader.SetTexture(kernelID, "SrcTexture", _dissolveMap);
         _computeShader.SetTexture(kernelID, "DestTexture", _destMap);
 
-        // Debug.Log(_dissolveMap.format);
+        // init material
 
         _dissolveLitMeshMaterialPropertyBlock = new MaterialPropertyBlock();
         _debugPlaneMaterialPropertyBlock = new MaterialPropertyBlock();
@@ -136,5 +159,47 @@ public class Dissolver : MonoBehaviour
         _debugPlaneMeshRenderer.SetPropertyBlock(_debugPlaneMaterialPropertyBlock);
 
         // _debugPlane.SetTexture("_BaseMap", _destMap);
+    }
+
+    void OnDisable()
+    {
+        Dispose();
+    }
+
+    void OnDestroy()
+    {
+        Dispose();
+    }
+
+    RenderTexture CreateTexture(int width, int height)
+    {
+        RenderTexture map = new RenderTexture(
+            width,
+            height,
+            0,
+            RenderTextureFormat.ARGBFloat,
+            RenderTextureReadWrite.Linear
+        );
+        map.enableRandomWrite = true;
+        map.hideFlags = HideFlags.DontSave;
+        return map;
+    }
+
+    // https://github.com/keijiro/Smrvfx/blob/898ced94e22c28fca591a1a268fdb034dec43292/Packages/jp.keijiro.smrvfx/Runtime/Internal/Utility.cs#L15
+    void DestroyObj(Object o)
+    {
+        if (o == null) return;
+        if (Application.isPlaying)
+            Object.Destroy(o);
+        else
+            Object.DestroyImmediate(o);
+    }
+
+    void Dispose()
+    {
+        _verticesBuffer?.Dispose();
+        _verticesBuffer = null;
+
+        DestroyObj(_destMap);
     }
 }
