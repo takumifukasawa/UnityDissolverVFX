@@ -447,7 +447,7 @@ MonoBehaviour:
   _edgeIn: 0.49
   _edgeOut: 0.51
   _edgeFadeOut: 0.52
-  _targetMeshFilter: {fileID: 313532233}
+  _targetObject: {fileID: 313532230}
   _debugPlaneMeshRenderer: {fileID: 675206762}
 --- !u!4 &502358375
 Transform:

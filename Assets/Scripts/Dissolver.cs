@@ -32,8 +32,9 @@ public class Dissolver : MonoBehaviour
     private float _edgeFadeOut = 0.52f;
 
     [SerializeField]
-    private MeshFilter _targetMeshFilter;
+    private GameObject _targetObject;
 
+    private MeshFilter _targetMeshFilter;
     private Mesh _targetMesh;
 
     [SerializeField]
@@ -57,6 +58,11 @@ public class Dissolver : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // init member
+
+        _targetMeshFilter = _targetObject.GetComponent<MeshFilter>();
+        _targetMesh = _targetMeshFilter.mesh;
+
         // init textures
 
         _destMap = CreateTexture(
@@ -64,10 +70,6 @@ public class Dissolver : MonoBehaviour
             _dissolveMap.height
         );
         _destMap.Create();
-
-        // init member
-
-        _targetMesh = _targetMeshFilter.mesh;
 
         // init buffer
 
@@ -101,6 +103,7 @@ public class Dissolver : MonoBehaviour
         _computeShader.SetFloat("EdgeIn", _edgeIn);
         _computeShader.SetFloat("EdgeOut", _edgeOut);
         _computeShader.SetFloat("EdgeFadeOut", _edgeFadeOut);
+        _computeShader.SetMatrix("Transform", _targetObject.transform.localToWorldMatrix);
 
         _computeShader.Dispatch(
             kernelID,
