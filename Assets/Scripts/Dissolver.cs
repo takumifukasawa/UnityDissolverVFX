@@ -62,8 +62,8 @@ public class Dissolver : MonoBehaviour
 
         kernelID = _computeShader.FindKernel("CSMain");
 
-        _computeShader.SetTexture(kernelID, "srcTexture", _dissolveMap);
-        _computeShader.SetTexture(kernelID, "destTexture", _destMap);
+        _computeShader.SetTexture(kernelID, "SrcTexture", _dissolveMap);
+        _computeShader.SetTexture(kernelID, "DestTexture", _destMap);
 
         // Debug.Log(_dissolveMap.format);
 
@@ -75,12 +75,12 @@ public class Dissolver : MonoBehaviour
     void Update()
     {
         // _computeShader.SetFloat("dissolveInput", _dissolveInput);
-        _computeShader.SetFloat("dissolveRate", _dissolveRate);
-        _computeShader.SetFloat("edgeFadeIn", _edgeFadeIn);
-        _computeShader.SetFloat("edgeFadeIn", _edgeFadeIn);
-        _computeShader.SetFloat("edgeIn", _edgeIn);
-        _computeShader.SetFloat("edgeOut", _edgeOut);
-        _computeShader.SetFloat("edgeFadeOut", _edgeFadeOut);
+        _computeShader.SetFloat("DissolveRate", _dissolveRate);
+        _computeShader.SetFloat("EdgeFadeIn", _edgeFadeIn);
+        _computeShader.SetFloat("EdgeFadeIn", _edgeFadeIn);
+        _computeShader.SetFloat("EdgeIn", _edgeIn);
+        _computeShader.SetFloat("EdgeOut", _edgeOut);
+        _computeShader.SetFloat("EdgeFadeOut", _edgeFadeOut);
 
         _computeShader.Dispatch(
             kernelID,
