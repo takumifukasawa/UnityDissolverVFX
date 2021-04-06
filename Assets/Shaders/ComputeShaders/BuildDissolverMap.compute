@@ -38,6 +38,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     float4 wp = mul(Transform, lp);
 
     // destTexture[id] = t;
-    DestTexture[uv] = float4(o.DissolveEdge, wp.x, wp.y, wp.z);
+    // DestTexture[uv] = float4(o.DissolveEdge, wp.x, wp.y, wp.z);
+    DestTexture[uv] = float4(wp.x, wp.y, wp.z, 1);
     // destTexture[id] = float4(1, 0, 0, 1);
 }

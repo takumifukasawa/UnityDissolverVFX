@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class Dissolver : MonoBehaviour
 {
@@ -36,6 +37,9 @@ public class Dissolver : MonoBehaviour
 
     private MeshFilter _targetMeshFilter;
     private Mesh _targetMesh;
+
+    [SerializeField]
+    private VisualEffect _visualEffect;
 
     [SerializeField]
     private MeshRenderer _debugPlaneMeshRenderer;
@@ -111,6 +115,8 @@ public class Dissolver : MonoBehaviour
             _dissolveMap.height,
             1
         );
+
+        _visualEffect.SetTexture("PositionMap", _destMap);
 
         // # DissolveMap
         // Texture2D_54ef741b959443bd9e9b02b73af70d78

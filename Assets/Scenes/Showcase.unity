@@ -448,6 +448,7 @@ MonoBehaviour:
   _edgeOut: 0.51
   _edgeFadeOut: 0.52
   _targetObject: {fileID: 313532230}
+  _visualEffect: {fileID: 1767914829}
   _debugPlaneMeshRenderer: {fileID: 675206762}
 --- !u!4 &502358375
 Transform:

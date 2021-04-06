@@ -17,9 +17,9 @@ MonoBehaviour:
   categories: []
   uiBounds:
     serializedVersion: 2
-    x: 941
+    x: 680
     y: -190
-    width: 426
+    width: 687
     height: 1582
 --- !u!114 &114350483966674976
 MonoBehaviour:
@@ -46,8 +46,8 @@ MonoBehaviour:
   m_UISuperCollapsed: 0
   m_UIInfos: {fileID: 114340500867371532}
   m_ParameterInfo:
-  - name: DissolveMap
-    path: DissolveMap
+  - name: PositionMap
+    path: PositionMap
     tooltip: 
     sheetType: m_NamedObject
     realType: Texture2D
@@ -63,7 +63,7 @@ MonoBehaviour:
   m_ImportDependencies: []
   m_GraphVersion: 6
   m_ResourceVersion: 1
-  m_saved: 1
+  m_saved: 0
   m_SubgraphDependencies: []
   m_CategoryPath: 
 --- !u!2058629511 &8926484042661614527
@@ -167,7 +167,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 16
+      m_SerializableObject: 1024
     m_Space: 2147483647
   m_Property:
     name: Rate
@@ -540,10 +540,10 @@ MonoBehaviour:
   - {fileID: 8926484042661614583}
   - {fileID: 8926484042661614585}
   dataType: 0
-  capacity: 32
+  capacity: 1024
   stripCapacity: 16
   particlePerStripCount: 16
-  m_Space: 0
+  m_Space: 1
 --- !u!114 &8926484042661614569
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -566,7 +566,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614570}
   - {fileID: 8926484042661614575}
   m_OutputSlots: []
-  m_Disabled: 0
+  m_Disabled: 1
   attribute: velocity
   Composition: 0
   Source: 0
@@ -1228,7 +1228,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEngine.AnimationCurve, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-      m_SerializableObject: '{"frames":[{"time":0.0,"value":0.08673095703125,"inTangent":0.402862548828125,"outTangent":0.402862548828125,"tangentMode":0,"leftTangentMode":1,"rightTangentMode":1,"broken":false},{"time":1.0,"value":0.489593505859375,"inTangent":0.402862548828125,"outTangent":0.402862548828125,"tangentMode":0,"leftTangentMode":1,"rightTangentMode":1,"broken":false}],"preWrapMode":8,"postWrapMode":8,"version":1}'
+      m_SerializableObject: '{"frames":[{"time":0.0,"value":0.08673095703125,"inTangent":0.0709032192826271,"outTangent":0.0709032192826271,"tangentMode":0,"leftTangentMode":1,"rightTangentMode":1,"broken":false},{"time":0.991668701171875,"value":0.15704345703125,"inTangent":0.0709032192826271,"outTangent":0.0709032192826271,"tangentMode":0,"leftTangentMode":1,"rightTangentMode":1,"broken":false}],"preWrapMode":8,"postWrapMode":8,"version":1}'
     m_Space: 2147483647
   m_Property:
     name: Size
@@ -1337,12 +1337,12 @@ MonoBehaviour:
   m_Parent: {fileID: 114350483966674976}
   m_Children: []
   m_UIPosition: {x: 0, y: 0}
-  m_UICollapsed: 1
+  m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_InputSlots: []
   m_OutputSlots:
   - {fileID: 8926484042661614611}
-  m_ExposedName: DissolveMap
+  m_ExposedName: PositionMap
   m_Exposed: 1
   m_Order: 0
   m_Category: 
@@ -1358,7 +1358,14 @@ MonoBehaviour:
   m_EnumValues: []
   m_ValueFilter: 0
   m_Tooltip: 
-  m_Nodes: []
+  m_Nodes:
+  - m_Id: 0
+    linkedSlots:
+    - outputSlot: {fileID: 8926484042661614611}
+      inputSlot: {fileID: 8926484042661614613}
+    position: {x: 680, y: 514}
+    expandedSlots: []
+    expanded: 0
 --- !u!114 &8926484042661614611
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1392,7 +1399,8 @@ MonoBehaviour:
       m_SerializableType: UnityEngine.Texture2D, UnityEngine.CoreModule, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
   m_Direction: 1
-  m_LinkedSlots: []
+  m_LinkedSlots:
+  - {fileID: 8926484042661614613}
 --- !u!114 &8926484042661614612
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1417,7 +1425,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614615}
   - {fileID: 8926484042661614619}
   m_OutputSlots: []
-  m_Disabled: 1
+  m_Disabled: 0
   attribute: position
   Composition: 0
   SampleMode: 6
@@ -1455,7 +1463,8 @@ MonoBehaviour:
       m_SerializableType: UnityEngine.Texture2D, UnityEngine.CoreModule, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
   m_Direction: 0
-  m_LinkedSlots: []
+  m_LinkedSlots:
+  - {fileID: 8926484042661614611}
 --- !u!114 &8926484042661614614
 MonoBehaviour:
   m_ObjectHideFlags: 0
