@@ -71,11 +71,7 @@ public class Dissolver : MonoBehaviour
 
         // init buffer
 
-        Debug.Log("-----------------------");
-        Debug.Log(_targetMesh.vertices);
         Vector3[] vertices = _targetMesh.vertices;
-        Debug.Log(vertices.Length);
-        Debug.Log("-----------------------");
         _verticesBuffer = new ComputeBuffer(vertices.Length, sizeof(float) * 3);
         _verticesBuffer.SetData(vertices);
 
@@ -98,6 +94,7 @@ public class Dissolver : MonoBehaviour
     void Update()
     {
         // _computeShader.SetFloat("dissolveInput", _dissolveInput);
+        _computeShader.SetBuffer(kernelID, "VerticesBuffer", _verticesBuffer);
         _computeShader.SetFloat("DissolveRate", _dissolveRate);
         _computeShader.SetFloat("EdgeFadeIn", _edgeFadeIn);
         _computeShader.SetFloat("EdgeFadeIn", _edgeFadeIn);
