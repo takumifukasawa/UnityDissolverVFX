@@ -44,6 +44,13 @@ public class Dissolver : MonoBehaviour
     [SerializeField]
     private MeshRenderer _debugPlaneMeshRenderer;
 
+    [SerializeField]
+    private int _destTextureWidth = 512;
+
+    [SerializeField]
+    private int _destTextureHeight = 512;
+
+
     // [SerializeField]
     private RenderTexture _destMap;
 
@@ -70,8 +77,10 @@ public class Dissolver : MonoBehaviour
         // init textures
 
         _destMap = CreateTexture(
-            _dissolveMap.width,
-            _dissolveMap.height
+            // _dissolveMap.width,
+            // _dissolveMap.height
+            _destTextureWidth,
+            _destTextureHeight
         );
         _destMap.Create();
 
@@ -89,6 +98,14 @@ public class Dissolver : MonoBehaviour
 
         _computeShader.SetTexture(kernelID, "SrcTexture", _dissolveMap);
         _computeShader.SetTexture(kernelID, "DestTexture", _destMap);
+        _computeShader.SetInt("SampleCount", vertices.Length);
+        _computeShader.SetInt("DestTextureWidth", _destTextureWidth);
+        _computeShader.SetInt("DestTextureHeight", _destTextureHeight);
+
+        Debug.Log("DestTextureWidth:");
+        Debug.Log(_destTextureWidth);
+        Debug.Log("DestTextureHeight:");
+        Debug.Log(_destTextureHeight);
 
         // init material
 
@@ -111,8 +128,10 @@ public class Dissolver : MonoBehaviour
 
         _computeShader.Dispatch(
             kernelID,
-            _dissolveMap.width,
-            _dissolveMap.height,
+            // _dissolveMap.width,
+            // _dissolveMap.height,
+            _destTextureWidth,
+            _destTextureHeight,
             1
         );
 
@@ -186,6 +205,7 @@ public class Dissolver : MonoBehaviour
             RenderTextureFormat.ARGBFloat,
             RenderTextureReadWrite.Linear
         );
+        map.filterMode = FilterMode.Point;
         map.enableRandomWrite = true;
         map.hideFlags = HideFlags.DontSave;
         return map;

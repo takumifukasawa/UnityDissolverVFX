@@ -12,12 +12,21 @@ float EdgeIn;
 float EdgeOut;
 float EdgeFadeOut;
 float4x4 Transform;
+uint SampleCount;
+uint DestTextureWidth;
+uint DestTextureHeight;
 
 // outputs
 
 RWTexture2D<float4> DestTexture;
 
 // cs
+
+float random (float2 st) {
+    return frac(sin(dot(st.xy,
+                         float2(12.9898,78.233)))*
+        43758.5453123);
+}
 
 [numthreads(1,1,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
@@ -40,5 +49,16 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     // destTexture[id] = t;
     // DestTexture[uv] = float4(o.DissolveEdge, wp.x, wp.y, wp.z);
     DestTexture[uv] = float4(wp.x, wp.y, wp.z, 1);
+    uint index = id.y * DestTextureWidth + id.x;
+    float r = random(float2((float)uv.x, (float)uv.y)) * (float)(index < SampleCount ? 1 : 0);
+    DestTexture[uv] = float4(r, r, 1, 1);
+    // DestTexture[uv] = float4(
+    //     id.x / DestTextureWidth,
+    //     id.y / DestTextureHeight,
+    //     0,
+    //     1
+    // );
+    // DestTexture[uv] = float4(id.y * DestTextureWidth + id.x < SampleCount ? 1 : 0, 0, 0, 1);
+    // DestTexture[uv] = float4(0, 0, 0, 1);
     // destTexture[id] = float4(1, 0, 0, 1);
 }
