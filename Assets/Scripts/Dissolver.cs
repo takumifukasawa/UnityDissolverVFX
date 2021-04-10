@@ -44,13 +44,6 @@ public class Dissolver : MonoBehaviour
     [SerializeField]
     private MeshRenderer _debugPlaneMeshRenderer;
 
-    [SerializeField]
-    private int _destTextureWidth = 512;
-
-    [SerializeField]
-    private int _destTextureHeight = 512;
-
-
     // [SerializeField]
     private RenderTexture _destMap;
 
@@ -66,6 +59,8 @@ public class Dissolver : MonoBehaviour
 
     private ComputeBuffer _verticesBuffer;
 
+    private ComputeBuffer _uvBuffer;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -77,10 +72,8 @@ public class Dissolver : MonoBehaviour
         // init textures
 
         _destMap = CreateTexture(
-            // _dissolveMap.width,
-            // _dissolveMap.height
-            _destTextureWidth,
-            _destTextureHeight
+            _dissolveMap.width,
+            _dissolveMap.height
         );
         _destMap.Create();
 
@@ -89,6 +82,10 @@ public class Dissolver : MonoBehaviour
         Vector3[] vertices = _targetMesh.vertices;
         _verticesBuffer = new ComputeBuffer(vertices.Length, sizeof(float) * 3);
         _verticesBuffer.SetData(vertices);
+
+        Vector2[] uv = _targetMesh.uv;
+        _uvBuffer = new ComputeBuffer(uv.Length, sizeof(float) * 2);
+        _uvBuffer.SetData(uv);
 
         // init compute shader
 
@@ -99,18 +96,25 @@ public class Dissolver : MonoBehaviour
         _computeShader.SetTexture(kernelID, "SrcTexture", _dissolveMap);
         _computeShader.SetTexture(kernelID, "DestTexture", _destMap);
         _computeShader.SetInt("SampleCount", vertices.Length);
-        _computeShader.SetInt("DestTextureWidth", _destTextureWidth);
-        _computeShader.SetInt("DestTextureHeight", _destTextureHeight);
-
-        Debug.Log("DestTextureWidth:");
-        Debug.Log(_destTextureWidth);
-        Debug.Log("DestTextureHeight:");
-        Debug.Log(_destTextureHeight);
+        _computeShader.SetInt("DestTextureWidth", _destMap.width);
+        _computeShader.SetInt("DestTextureHeight", _destMap.height);
 
         // init material
 
         _dissolveLitMeshMaterialPropertyBlock = new MaterialPropertyBlock();
         _debugPlaneMaterialPropertyBlock = new MaterialPropertyBlock();
+
+        // Debug.Log("w");
+        // Debug.Log(_destMap.width);
+        // Debug.Log("h");
+        // Debug.Log(_destMap.height);
+        // Debug.Log("uv length");
+        // Debug.Log(uv.Length);
+
+        // for (int i = 0; i < uv.Length; i++)
+        // {
+        //     Debug.Log(uv[i]);
+        // }
     }
 
     // Update is called once per frame
@@ -118,6 +122,7 @@ public class Dissolver : MonoBehaviour
     {
         // _computeShader.SetFloat("dissolveInput", _dissolveInput);
         _computeShader.SetBuffer(kernelID, "VerticesBuffer", _verticesBuffer);
+        _computeShader.SetBuffer(kernelID, "UvBuffer", _uvBuffer);
         _computeShader.SetFloat("DissolveRate", _dissolveRate);
         _computeShader.SetFloat("EdgeFadeIn", _edgeFadeIn);
         _computeShader.SetFloat("EdgeFadeIn", _edgeFadeIn);
@@ -128,10 +133,8 @@ public class Dissolver : MonoBehaviour
 
         _computeShader.Dispatch(
             kernelID,
-            // _dissolveMap.width,
-            // _dissolveMap.height,
-            _destTextureWidth,
-            _destTextureHeight,
+            _destMap.width,
+            _destMap.height,
             1
         );
 

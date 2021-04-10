@@ -5,6 +5,7 @@
 // inputs
 
 StructuredBuffer<float3> VerticesBuffer;
+StructuredBuffer<float2> UvBuffer;
 Texture2D<float4> SrcTexture;
 float DissolveRate;
 float EdgeFadeIn;
@@ -28,13 +29,41 @@ float random (float2 st) {
         43758.5453123);
 }
 
-[numthreads(1,1,1)]
-void CSMain (uint3 id : SV_DispatchThreadID)
+// ref: https://github.com/keijiro/Smrvfx/blob/d4d84cc60fe3f53055251510bf5cc47f87ad2333/Packages/jp.keijiro.smrvfx/Resources/SkinnedMeshBaker.compute
+// Hash function from H. Schechter & R. Bridson, goo.gl/RXiKaH
+uint Hash(uint s)
 {
-    uint2 uv = uint2(id.x, id.y);
-    float4 t = SrcTexture[uv];
+    s ^= 2747636419u;
+    s *= 2654435769u;
+    s ^= s >> 16;
+    s *= 2654435769u;
+    s ^= s >> 16;
+    s *= 2654435769u;
+    return s;
+}
+
+[numthreads(1,1,1)]
+void CSMain (uint2 id : SV_DispatchThreadID)
+{
+    // random sampling
+    uint sampleIndex = Hash(id.x + id.y * 65536) % SampleCount;
+
+    // order sampling
+    // uint sampleIndex = id.y * DestTextureWidth + id.x;
+
+    float4 t = SrcTexture[id];
+
+    float3 v = VerticesBuffer[sampleIndex];
+    float2 uv = UvBuffer[sampleIndex];
+
+    float4 dissolveMapValue = SrcTexture[uint2(
+        (uint)(uv.x * DestTextureWidth),
+        (uint)(uv.y * DestTextureHeight)
+    )];
+
     Dissolver o = dissolver(
-        t.x,
+        // t.x,
+        dissolveMapValue.x,
         // 1.0,
         DissolveRate,
         EdgeFadeIn,
@@ -42,16 +71,31 @@ void CSMain (uint3 id : SV_DispatchThreadID)
         EdgeOut,
         EdgeFadeOut
     );
-    float3 v = VerticesBuffer[id.x];
+
     float4 lp = float4(v.x, v.y, v.z, 1);
     float4 wp = mul(Transform, lp);
 
     // destTexture[id] = t;
     // DestTexture[uv] = float4(o.DissolveEdge, wp.x, wp.y, wp.z);
-    DestTexture[uv] = float4(wp.x, wp.y, wp.z, 1);
-    uint index = id.y * DestTextureWidth + id.x;
-    float r = random(float2((float)uv.x, (float)uv.y)) * (float)(index < SampleCount ? 1 : 0);
-    DestTexture[uv] = float4(r, r, 1, 1);
+
+    // DestTexture[id] = float4(wp.x, wp.y, wp.z, 1);
+
+    DestTexture[id] = float4(
+        lerp(
+            float3(0, 0, 0),
+            float3(wp.x, wp.y, wp.z),
+            sign(o.DissolveEdge)
+        ), 1
+    );
+
+    // uint index = id.y * DestTextureWidth + id.x;
+    // float r = random(float2((float)id.x, (float)id.y)) * (float)(index < SampleCount ? 1 : 0);
+    // // DestTexture[id] = float4(r, r, 1, 1);
+    // DestTexture[id] = float4(o.DissolveEdge, 0, 0, 1);
+
+    // DestTexture[id] = float4(t.x, 0, 0, 1);
+    // DestTexture[id] = float4(dissolveMapValue.xyz, 1);
+    // DestTexture[id] = float4((float)uv.x, (float)uv.y, 1, 1);
     // DestTexture[uv] = float4(
     //     id.x / DestTextureWidth,
     //     id.y / DestTextureHeight,
