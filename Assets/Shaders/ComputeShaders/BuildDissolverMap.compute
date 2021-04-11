@@ -51,10 +51,10 @@ float random (float2 st) {
 [numthreads(1,1,1)]
 void CSMain (uint2 id : SV_DispatchThreadID)
 {
-    float idx = (float)id.x;
-    float idy = (float)id.y;
-    // float idx = (float)id.x + Time;
-    // float idy = (float)id.y + Time;
+    // float idx = (float)id.x;
+    // float idy = (float)id.y;
+    float idx = (float)id.x + Time;
+    float idy = (float)id.y + Time;
     // float2 currentId = float2(idx, idy);
 
     // random sampling
@@ -76,28 +76,37 @@ void CSMain (uint2 id : SV_DispatchThreadID)
     float2 uv2 = UvBuffer[i2];
     float2 uv3 = UvBuffer[i3];
 
-    float weight1 = lerp(0, 1, random(float2(idx, idy)));
-    float weight2 = lerp(0, 1 - weight1, random(float2(idy, idx)));
+    // manually random seed
+    float weight1 = lerp(
+        0,
+        1,
+        random(float2((float)targetIndex + Time + 1, (float)targetIndex + Time + 2))
+    );
+    float weight2 = lerp(
+        0,
+        1 - weight1,
+        random(float2((float)targetIndex + Time + 3, (float)targetIndex + Time + 4))
+    );
     float weight3 = 1 - (weight1 + weight2);
 
     // weight1 = frac(Time / 100);
     // weight2 = 1 - Time;
     // weight3 = 0;
 
-float t = frac(Time) * 3;
-if(t > 2) {
-    weight1 = t - 2;
-    weight3 = 1 - weight1;
-    weight2 = 0;
-} else if (t > 1) {
-    weight3 = t - 1;
-    weight2 = 1 - weight3;
-    weight1 = 0;
-} else {
-    weight2 = t;
-    weight1 = 1 - weight2;
-    weight3 = 0;
-}
+// float t = frac(Time) * 3;
+// if(t > 2) {
+//     weight1 = t - 2;
+//     weight3 = 1 - weight1;
+//     weight2 = 0;
+// } else if (t > 1) {
+//     weight3 = t - 1;
+//     weight2 = 1 - weight3;
+//     weight1 = 0;
+// } else {
+//     weight2 = t;
+//     weight1 = 1 - weight2;
+//     weight3 = 0;
+// }
     
     // // for debug
     // weight1 = 0.333;

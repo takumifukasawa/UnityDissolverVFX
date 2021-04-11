@@ -1010,7 +1010,7 @@ VisualEffect:
       - m_Value: 0.025
         m_Name: GlobalScale
         m_Overridden: 1
-      - m_Value: 6
+      - m_Value: 0.1
         m_Name: GlobalLifetime
         m_Overridden: 1
     m_Vector2f:
@@ -1023,7 +1023,7 @@ VisualEffect:
       m_Array: []
     m_Int:
       m_Array:
-      - m_Value: 1
+      - m_Value: 1024
         m_Name: SpawnRate
         m_Overridden: 1
     m_Matrix4x4f:
