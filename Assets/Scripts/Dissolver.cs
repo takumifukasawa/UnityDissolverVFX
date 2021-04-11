@@ -45,7 +45,8 @@ public class Dissolver : MonoBehaviour
     private MeshRenderer _debugPlaneMeshRenderer;
 
     // [SerializeField]
-    private RenderTexture _destMap;
+    private RenderTexture _positionMap;
+    private RenderTexture _alphaMap;
 
     [SerializeField]
     private int _destMapWidth = 512;
@@ -62,7 +63,7 @@ public class Dissolver : MonoBehaviour
     private MaterialPropertyBlock _dissolveLitMeshMaterialPropertyBlock;
     private MaterialPropertyBlock _debugPlaneMaterialPropertyBlock;
 
-    // private RenderTexture _destMap;
+    // private RenderTexture _positionMap;
 
     private int kernelID;
 
@@ -82,11 +83,19 @@ public class Dissolver : MonoBehaviour
 
         // init textures
 
-        _destMap = CreateTexture(
+        _positionMap = CreateTexture(
             _destMapWidth,
-            _destMapHeight
+            _destMapHeight,
+            RenderTextureFormat.ARGBFloat
         );
-        _destMap.Create();
+        _positionMap.Create();
+
+        _alphaMap = CreateTexture(
+            _destMapWidth,
+            _destMapHeight,
+            RenderTextureFormat.ARGB32
+        );
+        _alphaMap.Create();
 
         // init buffer
 
@@ -108,16 +117,17 @@ public class Dissolver : MonoBehaviour
 
         // _computeShader.SetBuffer(kernelID, "Triangles", _verticesBuffer);
 
-        _computeShader.SetTexture(kernelID, "SrcTexture", _dissolveMap);
-        _computeShader.SetTexture(kernelID, "DestTexture", _destMap);
+        _computeShader.SetTexture(kernelID, "DissolveMap", _dissolveMap);
+        _computeShader.SetTexture(kernelID, "PositionMap", _positionMap);
+        _computeShader.SetTexture(kernelID, "AlphaMap", _alphaMap);
         _computeShader.SetBuffer(kernelID, "TrianglesBuffer", _trianglesBuffer);
         _computeShader.SetBuffer(kernelID, "VerticesBuffer", _verticesBuffer);
         _computeShader.SetBuffer(kernelID, "UvBuffer", _uvBuffer);
         _computeShader.SetInt("SampleCount", triangles.Length);
-        _computeShader.SetInt("SrcTextureWidth", _dissolveMap.width);
-        _computeShader.SetInt("SrcTextureHeight", _dissolveMap.height);
-        _computeShader.SetInt("DestTextureWidth", _destMap.width);
-        _computeShader.SetInt("DestTextureHeight", _destMap.height);
+        _computeShader.SetInt("SrcMapWidth", _dissolveMap.width);
+        _computeShader.SetInt("SrcMapHeight", _dissolveMap.height);
+        _computeShader.SetInt("DestMapWidth", _destMapWidth);
+        _computeShader.SetInt("DestMapHeight", _destMapHeight);
         _computeShader.SetFloat("DissolveThreshold", _dissolveThreshold);
 
         // init material
@@ -126,9 +136,9 @@ public class Dissolver : MonoBehaviour
         _debugPlaneMaterialPropertyBlock = new MaterialPropertyBlock();
 
         // Debug.Log("w");
-        // Debug.Log(_destMap.width);
+        // Debug.Log(_positionMap.width);
         // Debug.Log("h");
-        // Debug.Log(_destMap.height);
+        // Debug.Log(_positionMap.height);
         // Debug.Log("uv length");
         // Debug.Log(uv.Length);
 
@@ -152,12 +162,13 @@ public class Dissolver : MonoBehaviour
 
         _computeShader.Dispatch(
             kernelID,
-            _destMap.width,
-            _destMap.height,
+            _destMapWidth,
+            _destMapHeight,
             1
         );
 
-        _visualEffect.SetTexture("PositionMap", _destMap);
+        _visualEffect.SetTexture("PositionMap", _positionMap);
+        _visualEffect.SetTexture("AlphaMap", _alphaMap);
 
         // # DissolveMap
         // Texture2D_54ef741b959443bd9e9b02b73af70d78
@@ -177,7 +188,7 @@ public class Dissolver : MonoBehaviour
         _dissolveLitMeshMaterialPropertyBlock.SetTexture(
             "Texture2D_54ef741b959443bd9e9b02b73af70d78",
             _dissolveMap
-        // _destMap
+        // _positionMap
         );
         _dissolveLitMeshMaterialPropertyBlock.SetFloat(
             "Vector1_63f8f76926274e71baf1152131955b40",
@@ -201,11 +212,14 @@ public class Dissolver : MonoBehaviour
         );
         _dissolveLitMeshRenderer.SetPropertyBlock(_dissolveLitMeshMaterialPropertyBlock);
 
+        // for debug
+
         _debugPlaneMeshRenderer.GetPropertyBlock(_debugPlaneMaterialPropertyBlock);
-        _debugPlaneMaterialPropertyBlock.SetTexture("_BaseMap", _destMap);
+        _debugPlaneMaterialPropertyBlock.SetTexture("_BaseMap", _positionMap);
+        // _debugPlaneMaterialPropertyBlock.SetTexture("_BaseMap", _alphaMap);
         _debugPlaneMeshRenderer.SetPropertyBlock(_debugPlaneMaterialPropertyBlock);
 
-        // _debugPlane.SetTexture("_BaseMap", _destMap);
+        // _debugPlane.SetTexture("_BaseMap", _positionMap);
     }
 
     void OnDisable()
@@ -218,13 +232,13 @@ public class Dissolver : MonoBehaviour
         Dispose();
     }
 
-    RenderTexture CreateTexture(int width, int height)
+    RenderTexture CreateTexture(int width, int height, UnityEngine.RenderTextureFormat format)
     {
         RenderTexture map = new RenderTexture(
             width,
             height,
             0,
-            RenderTextureFormat.ARGBFloat,
+            format,
             RenderTextureReadWrite.Linear
         );
         map.filterMode = FilterMode.Point;
@@ -233,6 +247,7 @@ public class Dissolver : MonoBehaviour
         return map;
     }
 
+    // ref:
     // https://github.com/keijiro/Smrvfx/blob/898ced94e22c28fca591a1a268fdb034dec43292/Packages/jp.keijiro.smrvfx/Runtime/Internal/Utility.cs#L15
     void DestroyObj(Object o)
     {
@@ -254,6 +269,7 @@ public class Dissolver : MonoBehaviour
         _uvBuffer?.Dispose();
         _uvBuffer = null;
 
-        DestroyObj(_destMap);
+        DestroyObj(_positionMap);
+        DestroyObj(_alphaMap);
     }
 }

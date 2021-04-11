@@ -7,7 +7,7 @@
 StructuredBuffer<int> TrianglesBuffer;
 StructuredBuffer<float3> VerticesBuffer;
 StructuredBuffer<float2> UvBuffer;
-Texture2D<float4> SrcTexture;
+Texture2D<float4> DissolveMap;
 float DissolveRate;
 float EdgeFadeIn;
 float EdgeIn;
@@ -15,15 +15,16 @@ float EdgeOut;
 float EdgeFadeOut;
 float4x4 Transform;
 uint SampleCount;
-uint SrcTextureWidth;
-uint SrcTextureHeight;
+uint DissolveMapWidth;
+uint DissolveMapHeight;
 uint DestTextureWidth;
 uint DestTextureHeight;
 float DissolveThreshold;
 
 // outputs
 
-RWTexture2D<float4> DestTexture;
+RWTexture2D<float4> PositionMap;
+RWTexture2D<float4> AlphaMap;
 
 // ref:
 // https://stackoverflow.com/questions/4200224/random-noise-functions-for-glsl
@@ -33,24 +34,25 @@ float random (float2 st) {
         43758.5453123);
 }
 
-// ref: https://github.com/keijiro/Smrvfx/blob/d4d84cc60fe3f53055251510bf5cc47f87ad2333/Packages/jp.keijiro.smrvfx/Resources/SkinnedMeshBaker.compute
-// Hash function from H. Schechter & R. Bridson, goo.gl/RXiKaH
-uint Hash(uint s)
-{
-    s ^= 2747636419u;
-    s *= 2654435769u;
-    s ^= s >> 16;
-    s *= 2654435769u;
-    s ^= s >> 16;
-    s *= 2654435769u;
-    return s;
-}
+// // ref: https://github.com/keijiro/Smrvfx/blob/d4d84cc60fe3f53055251510bf5cc47f87ad2333/Packages/jp.keijiro.smrvfx/Resources/SkinnedMeshBaker.compute
+// // Hash function from H. Schechter & R. Bridson, goo.gl/RXiKaH
+// uint Hash(uint s)
+// {
+//     s ^= 2747636419u;
+//     s *= 2654435769u;
+//     s ^= s >> 16;
+//     s *= 2654435769u;
+//     s ^= s >> 16;
+//     s *= 2654435769u;
+//     return s;
+// }
 
 [numthreads(1,1,1)]
 void CSMain (uint2 id : SV_DispatchThreadID)
 {
     // random sampling
-    uint targetIndex = Hash(id.x + id.y) % SampleCount;
+    // uint targetIndex = Hash(id.x + id.y) % SampleCount;
+    uint targetIndex = (uint)(random(float2((float)id.x, (float)id.y)) * SampleCount);
 
     int ti1 = TrianglesBuffer[targetIndex * 3];
     int ti2 = TrianglesBuffer[targetIndex * 3 + 1];
@@ -85,9 +87,9 @@ void CSMain (uint2 id : SV_DispatchThreadID)
         wp2 * weight2 +
         wp3 * weight3;
 
-    float4 dissolveMapValue = SrcTexture[uint2(
-        (uint)(uv.x * SrcTextureWidth),
-        (uint)(uv.y * SrcTextureHeight)
+    float4 dissolveMapValue = DissolveMap[uint2(
+        (uint)(uv.x * DissolveMapWidth),
+        (uint)(uv.y * DissolveMapHeight)
     )];
 
     Dissolver o = dissolver(
@@ -99,13 +101,18 @@ void CSMain (uint2 id : SV_DispatchThreadID)
         EdgeFadeOut
     );
 
-    DestTexture[id] = float4(
+    // PositionMap[id] = float4(wp.x, wp.y, wp.z, 1);
+    PositionMap[id] = float4(
         lerp(
             float3(0, 0, 0),
             float3(wp.x, wp.y, wp.z),
             clamp(sign(o.DissolveEdge - DissolveThreshold), 0, 1)
         ), 1
     );
+
+    float alpha = clamp(sign(o.DissolveEdge - DissolveThreshold), 0, 1);
+    // AlphaMap[id] = float4(alpha, alpha, alpha, alpha);
+    AlphaMap[id] = float4(1, alpha, alpha, alpha);
 
     // // debug: position
     // DestTexture[id] = float4(
