@@ -343,7 +343,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecc1d2bf7b1f4b440abd0263665fffae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _dissolveLitMeshRenderer: {fileID: 313532232}
+  _dissolveLitMeshRenderer: {fileID: 1290871517}
   _computeShader: {fileID: 7200000, guid: 0239b0416ad376a4f95934f58cbd448e, type: 3}
   _dissolveMap: {fileID: 2800000, guid: e328a3f4f90283c4d9a60468dafc2f1d, type: 3}
   _dissolveRate: 0.528
@@ -351,7 +351,7 @@ MonoBehaviour:
   _edgeIn: 0.48
   _edgeOut: 0.51
   _edgeFadeOut: 0.53
-  _targetObject: {fileID: 313532230}
+  _targetObject: {fileID: 1290871515}
   _visualEffect: {fileID: 1767914829}
   _debugPlaneMeshRenderer: {fileID: 675206762}
   _destMapWidth: 1024
@@ -789,7 +789,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4dfd0bbabee1c87438167ca9c7ca44d2, type: 2}
+  - {fileID: 2100000, guid: 713e013d2c1268940842d4ea30250b0f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -827,7 +827,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1290871515}
   m_LocalRotation: {x: 0, y: 0.70710677, z: -0.70710677, w: 0}
-  m_LocalPosition: {x: 6.53, y: 0.6, z: 0}
+  m_LocalPosition: {x: -2.01, y: 0.6, z: 0}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1010,7 +1010,7 @@ VisualEffect:
       - m_Value: 0.025
         m_Name: GlobalScale
         m_Overridden: 1
-      - m_Value: 0.1
+      - m_Value: 6
         m_Name: GlobalLifetime
         m_Overridden: 1
     m_Vector2f:
@@ -1023,7 +1023,7 @@ VisualEffect:
       m_Array: []
     m_Int:
       m_Array:
-      - m_Value: 8192
+      - m_Value: 1
         m_Name: SpawnRate
         m_Overridden: 1
     m_Matrix4x4f:

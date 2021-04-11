@@ -100,7 +100,7 @@ public class Dissolver : MonoBehaviour
         // init buffer
 
         int[] triangles = _targetMesh.GetTriangles(0);
-        _trianglesBuffer = new ComputeBuffer(triangles.Length, sizeof(int) * 3);
+        _trianglesBuffer = new ComputeBuffer(triangles.Length, sizeof(int));
         _trianglesBuffer.SetData(triangles);
 
         Vector3[] vertices = _targetMesh.vertices;
@@ -123,7 +123,7 @@ public class Dissolver : MonoBehaviour
         _computeShader.SetBuffer(kernelID, "TrianglesBuffer", _trianglesBuffer);
         _computeShader.SetBuffer(kernelID, "VerticesBuffer", _verticesBuffer);
         _computeShader.SetBuffer(kernelID, "UvBuffer", _uvBuffer);
-        _computeShader.SetInt("TrianglesCount", triangles.Length);
+        _computeShader.SetInt("TrianglesCount", triangles.Length / 3);
         _computeShader.SetInt("DissolveMapWidth", _dissolveMap.width);
         _computeShader.SetInt("DissolveMapHeight", _dissolveMap.height);
         _computeShader.SetInt("DestMapWidth", _destMapWidth);
@@ -165,7 +165,8 @@ public class Dissolver : MonoBehaviour
         _computeShader.SetFloat("EdgeFadeOut", _edgeFadeOut);
         _computeShader.SetMatrix("Transform", _targetObject.transform.localToWorldMatrix);
         _computeShader.SetFloat("DissolveThreshold", _dissolveThreshold);
-        _computeShader.SetFloat("Time", Time.time * 100 % 4096); // multiply speed and clamp time
+        // _computeShader.SetFloat("Time", Time.time * 100 % 1024); // multiply speed and clamp time
+        _computeShader.SetFloat("Time", Time.time); // multiply speed and clamp time
 
         _computeShader.Dispatch(
             kernelID,
