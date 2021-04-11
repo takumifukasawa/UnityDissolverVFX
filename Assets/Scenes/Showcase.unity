@@ -343,7 +343,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecc1d2bf7b1f4b440abd0263665fffae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _dissolveLitMeshRenderer: {fileID: 1290871517}
+  _targetObject: {fileID: 313532230}
   _computeShader: {fileID: 7200000, guid: 0239b0416ad376a4f95934f58cbd448e, type: 3}
   _dissolveMap: {fileID: 2800000, guid: e328a3f4f90283c4d9a60468dafc2f1d, type: 3}
   _dissolveRate: 0.528
@@ -351,7 +351,6 @@ MonoBehaviour:
   _edgeIn: 0.48
   _edgeOut: 0.51
   _edgeFadeOut: 0.53
-  _targetObject: {fileID: 1290871515}
   _visualEffect: {fileID: 1767914829}
   _debugPlaneMeshRenderer: {fileID: 675206762}
   _destMapWidth: 1024
@@ -1010,7 +1009,7 @@ VisualEffect:
       - m_Value: 0.025
         m_Name: GlobalScale
         m_Overridden: 1
-      - m_Value: 0.1
+      - m_Value: 1
         m_Name: GlobalLifetime
         m_Overridden: 1
     m_Vector2f:

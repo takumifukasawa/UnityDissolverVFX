@@ -7,6 +7,9 @@ public class Dissolver : MonoBehaviour
 {
 
     [SerializeField]
+    private GameObject _targetObject;
+
+    [SerializeField]
     private ComputeShader _computeShader;
 
     [SerializeField]
@@ -29,9 +32,6 @@ public class Dissolver : MonoBehaviour
 
     [SerializeField, Range(0, 1)]
     private float _edgeFadeOut = 0.52f;
-
-    [SerializeField]
-    private GameObject _targetObject;
 
 
     private MeshRenderer _targetMeshRenderer;
