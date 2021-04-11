@@ -4,6 +4,7 @@
 
 // inputs
 
+StructuredBuffer<int> TrianglesBuffer;
 StructuredBuffer<float3> VerticesBuffer;
 StructuredBuffer<float2> UvBuffer;
 Texture2D<float4> SrcTexture;
@@ -14,6 +15,8 @@ float EdgeOut;
 float EdgeFadeOut;
 float4x4 Transform;
 uint SampleCount;
+uint SrcTextureWidth;
+uint SrcTextureHeight;
 uint DestTextureWidth;
 uint DestTextureHeight;
 
@@ -46,25 +49,51 @@ uint Hash(uint s)
 void CSMain (uint2 id : SV_DispatchThreadID)
 {
     // random sampling
-    uint sampleIndex = Hash(id.x + id.y * 65536) % SampleCount;
+    uint targetIndex = Hash(id.x + id.y * 65536) % SampleCount;
 
-    // order sampling
-    // uint sampleIndex = id.y * DestTextureWidth + id.x;
+    int ti1 = TrianglesBuffer[targetIndex * 3];
+    int ti2 = TrianglesBuffer[targetIndex * 3 + 1];
+    int ti3 = TrianglesBuffer[targetIndex * 3 + 2];
 
-    float4 t = SrcTexture[id];
+    float3 v1 = VerticesBuffer[ti1];
+    float3 v2 = VerticesBuffer[ti2];
+    float3 v3 = VerticesBuffer[ti3];
 
-    float3 v = VerticesBuffer[sampleIndex];
-    float2 uv = UvBuffer[sampleIndex];
+    float2 uv1 = UvBuffer[ti1];
+    float2 uv2 = UvBuffer[ti2];
+    float2 uv3 = UvBuffer[ti3];
+
+    // TODO:
+    // - random 0 - 1
+    // - sum 1
+    float weight1 = 1;
+    float weight2 = 0;
+    float weight3 = 0;
+
+    float2 uv =
+        uv1 * weight1 +
+        uv2 * weight2 +
+        uv3 * weight3;
+    
+    float4 lp1 = float4(v1.x, v1.y, v1.z, 1);
+    float4 lp2 = float4(v2.x, v2.y, v2.z, 1);
+    float4 lp3 = float4(v3.x, v3.y, v3.z, 1);
+    float4 wp1 = mul(Transform, lp1);
+    float4 wp2 = mul(Transform, lp2);
+    float4 wp3 = mul(Transform, lp3);
+
+    float4 wp = 
+        wp1 * weight1 +
+        wp2 * weight2 +
+        wp3 * weight3;
 
     float4 dissolveMapValue = SrcTexture[uint2(
-        (uint)(uv.x * DestTextureWidth),
-        (uint)(uv.y * DestTextureHeight)
+        (uint)(uv.x * SrcTextureWidth),
+        (uint)(uv.y * SrcTextureHeight)
     )];
 
     Dissolver o = dissolver(
-        // t.x,
         dissolveMapValue.x,
-        // 1.0,
         DissolveRate,
         EdgeFadeIn,
         EdgeIn,
@@ -72,21 +101,18 @@ void CSMain (uint2 id : SV_DispatchThreadID)
         EdgeFadeOut
     );
 
-    float4 lp = float4(v.x, v.y, v.z, 1);
-    float4 wp = mul(Transform, lp);
-
-    // destTexture[id] = t;
-    // DestTexture[uv] = float4(o.DissolveEdge, wp.x, wp.y, wp.z);
-
-    // DestTexture[id] = float4(wp.x, wp.y, wp.z, 1);
-
     DestTexture[id] = float4(
         lerp(
             float3(0, 0, 0),
             float3(wp.x, wp.y, wp.z),
-            sign(o.DissolveEdge)
+            clamp(sign(o.DissolveEdge - 0.9), 0, 1)
         ), 1
     );
+
+    // // debug: position
+    // DestTexture[id] = float4(
+    //     wp.x, wp.y, wp.z, 1
+    // );
 
     // uint index = id.y * DestTextureWidth + id.x;
     // float r = random(float2((float)id.x, (float)id.y)) * (float)(index < SampleCount ? 1 : 0);

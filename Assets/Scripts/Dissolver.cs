@@ -47,6 +47,12 @@ public class Dissolver : MonoBehaviour
     // [SerializeField]
     private RenderTexture _destMap;
 
+    [SerializeField]
+    private int _destMapWidth = 512;
+
+    [SerializeField]
+    private int _destMapHeight = 512;
+
     // [SerializeField]
     // private Material _debugPlane;
 
@@ -56,6 +62,8 @@ public class Dissolver : MonoBehaviour
     // private RenderTexture _destMap;
 
     private int kernelID;
+
+    private ComputeBuffer _trianglesBuffer;
 
     private ComputeBuffer _verticesBuffer;
 
@@ -72,12 +80,16 @@ public class Dissolver : MonoBehaviour
         // init textures
 
         _destMap = CreateTexture(
-            _dissolveMap.width,
-            _dissolveMap.height
+            _destMapWidth,
+            _destMapHeight
         );
         _destMap.Create();
 
         // init buffer
+
+        int[] triangles = _targetMesh.GetTriangles(0);
+        _trianglesBuffer = new ComputeBuffer(triangles.Length, sizeof(int) * 3);
+        _trianglesBuffer.SetData(triangles);
 
         Vector3[] vertices = _targetMesh.vertices;
         _verticesBuffer = new ComputeBuffer(vertices.Length, sizeof(float) * 3);
@@ -95,7 +107,10 @@ public class Dissolver : MonoBehaviour
 
         _computeShader.SetTexture(kernelID, "SrcTexture", _dissolveMap);
         _computeShader.SetTexture(kernelID, "DestTexture", _destMap);
-        _computeShader.SetInt("SampleCount", vertices.Length);
+        // _computeShader.SetInt("SampleCount", vertices.Length);
+        _computeShader.SetInt("SampleCount", triangles.Length);
+        _computeShader.SetInt("SrcTextureWidth", _dissolveMap.width);
+        _computeShader.SetInt("SrcTextureHeight", _dissolveMap.height);
         _computeShader.SetInt("DestTextureWidth", _destMap.width);
         _computeShader.SetInt("DestTextureHeight", _destMap.height);
 
@@ -111,9 +126,9 @@ public class Dissolver : MonoBehaviour
         // Debug.Log("uv length");
         // Debug.Log(uv.Length);
 
-        // for (int i = 0; i < uv.Length; i++)
+        // for (int i = 0; i < triangles.Length; i++)
         // {
-        //     Debug.Log(uv[i]);
+        //     Debug.Log(triangles[i]);
         // }
     }
 
@@ -121,6 +136,7 @@ public class Dissolver : MonoBehaviour
     void Update()
     {
         // _computeShader.SetFloat("dissolveInput", _dissolveInput);
+        _computeShader.SetBuffer(kernelID, "TrianglesBuffer", _trianglesBuffer);
         _computeShader.SetBuffer(kernelID, "VerticesBuffer", _verticesBuffer);
         _computeShader.SetBuffer(kernelID, "UvBuffer", _uvBuffer);
         _computeShader.SetFloat("DissolveRate", _dissolveRate);
@@ -226,8 +242,14 @@ public class Dissolver : MonoBehaviour
 
     void Dispose()
     {
+        _trianglesBuffer?.Dispose();
+        _trianglesBuffer = null;
+
         _verticesBuffer?.Dispose();
         _verticesBuffer = null;
+
+        _uvBuffer?.Dispose();
+        _uvBuffer = null;
 
         DestroyObj(_destMap);
     }
