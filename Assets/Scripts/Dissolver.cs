@@ -53,6 +53,9 @@ public class Dissolver : MonoBehaviour
     [SerializeField]
     private int _destMapHeight = 512;
 
+    [SerializeField, Range(0, 1)]
+    private float _dissolveThreshold = 0.5f;
+
     // [SerializeField]
     // private Material _debugPlane;
 
@@ -107,12 +110,15 @@ public class Dissolver : MonoBehaviour
 
         _computeShader.SetTexture(kernelID, "SrcTexture", _dissolveMap);
         _computeShader.SetTexture(kernelID, "DestTexture", _destMap);
-        // _computeShader.SetInt("SampleCount", vertices.Length);
+        _computeShader.SetBuffer(kernelID, "TrianglesBuffer", _trianglesBuffer);
+        _computeShader.SetBuffer(kernelID, "VerticesBuffer", _verticesBuffer);
+        _computeShader.SetBuffer(kernelID, "UvBuffer", _uvBuffer);
         _computeShader.SetInt("SampleCount", triangles.Length);
         _computeShader.SetInt("SrcTextureWidth", _dissolveMap.width);
         _computeShader.SetInt("SrcTextureHeight", _dissolveMap.height);
         _computeShader.SetInt("DestTextureWidth", _destMap.width);
         _computeShader.SetInt("DestTextureHeight", _destMap.height);
+        _computeShader.SetFloat("DissolveThreshold", _dissolveThreshold);
 
         // init material
 
@@ -136,9 +142,6 @@ public class Dissolver : MonoBehaviour
     void Update()
     {
         // _computeShader.SetFloat("dissolveInput", _dissolveInput);
-        _computeShader.SetBuffer(kernelID, "TrianglesBuffer", _trianglesBuffer);
-        _computeShader.SetBuffer(kernelID, "VerticesBuffer", _verticesBuffer);
-        _computeShader.SetBuffer(kernelID, "UvBuffer", _uvBuffer);
         _computeShader.SetFloat("DissolveRate", _dissolveRate);
         _computeShader.SetFloat("EdgeFadeIn", _edgeFadeIn);
         _computeShader.SetFloat("EdgeFadeIn", _edgeFadeIn);

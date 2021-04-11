@@ -19,6 +19,7 @@ uint SrcTextureWidth;
 uint SrcTextureHeight;
 uint DestTextureWidth;
 uint DestTextureHeight;
+float DissolveThreshold;
 
 // outputs
 
@@ -102,7 +103,7 @@ void CSMain (uint2 id : SV_DispatchThreadID)
         lerp(
             float3(0, 0, 0),
             float3(wp.x, wp.y, wp.z),
-            clamp(sign(o.DissolveEdge - 0.9), 0, 1)
+            clamp(sign(o.DissolveEdge - DissolveThreshold), 0, 1)
         ), 1
     );
 
