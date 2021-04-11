@@ -20,6 +20,7 @@ uint DissolveMapHeight;
 uint DestTextureWidth;
 uint DestTextureHeight;
 float DissolveThreshold;
+float Time;
 
 // outputs
 
@@ -36,23 +37,26 @@ float random (float2 st) {
 
 // // ref: https://github.com/keijiro/Smrvfx/blob/d4d84cc60fe3f53055251510bf5cc47f87ad2333/Packages/jp.keijiro.smrvfx/Resources/SkinnedMeshBaker.compute
 // // Hash function from H. Schechter & R. Bridson, goo.gl/RXiKaH
-uint Hash(uint s)
-{
-    s ^= 2747636419u;
-    s *= 2654435769u;
-    s ^= s >> 16;
-    s *= 2654435769u;
-    s ^= s >> 16;
-    s *= 2654435769u;
-    return s;
-}
+// uint Hash(uint s)
+// {
+//     s ^= 2747636419u;
+//     s *= 2654435769u;
+//     s ^= s >> 16;
+//     s *= 2654435769u;
+//     s ^= s >> 16;
+//     s *= 2654435769u;
+//     return s;
+// }
 
 [numthreads(1,1,1)]
 void CSMain (uint2 id : SV_DispatchThreadID)
 {
+    float idx = (float)id.x + Time;
+    float idy = (float)id.y + Time;
+
     // random sampling
-    uint targetIndex = Hash(id.x + id.y) % SampleCount;
-    // uint targetIndex = (uint)(random(float2((float)id.x, (float)id.y)) * SampleCount);
+    // uint targetIndex = Hash(id.x + id.y) % SampleCount;
+    uint targetIndex = (uint)(random(float2(idx, idy)) * SampleCount);
 
     int ti1 = TrianglesBuffer[targetIndex * 3];
     int ti2 = TrianglesBuffer[targetIndex * 3 + 1];
@@ -66,8 +70,8 @@ void CSMain (uint2 id : SV_DispatchThreadID)
     float2 uv2 = UvBuffer[ti2];
     float2 uv3 = UvBuffer[ti3];
 
-    float weight1 = lerp(0, 1, random(float2((float)id.x, (float)id.y)));
-    float weight2 = lerp(0, 1 - weight1, random(float2((float)id.y, (float)id.x)));
+    float weight1 = lerp(0, 1, random(float2(idx, idy)));
+    float weight2 = lerp(0, 1 - weight1, random(float2(idy, idx)));
     float weight3 = 1 - (weight1 + weight2);
 
     float2 uv =

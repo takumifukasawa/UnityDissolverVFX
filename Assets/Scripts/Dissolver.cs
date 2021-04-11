@@ -159,6 +159,7 @@ public class Dissolver : MonoBehaviour
         _computeShader.SetFloat("EdgeFadeOut", _edgeFadeOut);
         _computeShader.SetMatrix("Transform", _targetObject.transform.localToWorldMatrix);
         _computeShader.SetFloat("DissolveThreshold", _dissolveThreshold);
+        _computeShader.SetFloat("Time", Time.time * 10 % 1000); // multiply speed and clamp time
 
         _computeShader.Dispatch(
             kernelID,
