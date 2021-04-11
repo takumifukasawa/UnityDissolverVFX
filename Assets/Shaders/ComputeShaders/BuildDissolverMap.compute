@@ -63,18 +63,9 @@ void CSMain (uint2 id : SV_DispatchThreadID)
     float2 uv2 = UvBuffer[ti2];
     float2 uv3 = UvBuffer[ti3];
 
-    // TODO:
-    // - random 0 - 1
-    // - sum 1
-
-    float weightBase = 0.333;
     float weight1 = lerp(0, 1, random(float2((float)id.x, (float)id.y)));
     float weight2 = lerp(0, 1 - weight1, random(float2((float)id.y, (float)id.x)));
     float weight3 = 1 - (weight1 + weight2);
-
-    // float weight1 = 1;
-    // float weight2 = 0;
-    // float weight3 = 0;
 
     float2 uv =
         uv1 * weight1 +
