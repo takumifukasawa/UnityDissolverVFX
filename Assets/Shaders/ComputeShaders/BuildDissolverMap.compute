@@ -89,30 +89,6 @@ void CSMain (uint2 id : SV_DispatchThreadID)
     );
     float weight3 = 1 - (weight1 + weight2);
 
-    // weight1 = frac(Time / 100);
-    // weight2 = 1 - Time;
-    // weight3 = 0;
-
-// float t = frac(Time) * 3;
-// if(t > 2) {
-//     weight1 = t - 2;
-//     weight3 = 1 - weight1;
-//     weight2 = 0;
-// } else if (t > 1) {
-//     weight3 = t - 1;
-//     weight2 = 1 - weight3;
-//     weight1 = 0;
-// } else {
-//     weight2 = t;
-//     weight1 = 1 - weight2;
-//     weight3 = 0;
-// }
-    
-    // // for debug
-    // weight1 = 0.333;
-    // weight2 = 0.333;
-    // weight3 = 0.333;
-
     float2 uv =
         uv1 * weight1 +
         uv2 * weight2 +
@@ -147,45 +123,6 @@ void CSMain (uint2 id : SV_DispatchThreadID)
     float alpha = clamp(sign(o.DissolveEdge - DissolveThreshold), 0, 1);
 
     PositionMap[id] = float4(wp.x, wp.y, wp.z, 1);
-    // PositionMap[id] = float4(wp1.x, wp1.y, wp1.z, 1);
-    // PositionMap[id] = float4(wp2.x, wp2.y, wp2.z, 1);
-    // PositionMap[id] = float4(wp3.x, wp3.y, wp3.z, 1);
-    // PositionMap[id] = float4(
-    //     lerp(
-    //         float3(0, 0, 0),
-    //         float3(wp.x, wp.y, wp.z),
-    //         alpha
-    //     ), 1
-    // );
-
-    // for debug
-    // PositionMap[id] = float4(uv.x, uv.y, 1, 1);
-    // PositionMap[id] = float4(o.DissolveEdge, 0, 0, 1);
-    // PositionMap[id] = float4(o.DissolveEdge, 0, 0, 1);
 
     AlphaMap[id] = float4(alpha, alpha, alpha, alpha);
-
-
-    // // debug: position
-    // DestTexture[id] = float4(
-    //     wp.x, wp.y, wp.z, 1
-    // );
-
-    // uint index = id.y * DestTextureWidth + id.x;
-    // float r = random(float2((float)id.x, (float)id.y)) * (float)(index < TrianglesCount ? 1 : 0);
-    // // DestTexture[id] = float4(r, r, 1, 1);
-    // DestTexture[id] = float4(o.DissolveEdge, 0, 0, 1);
-
-    // DestTexture[id] = float4(t.x, 0, 0, 1);
-    // DestTexture[id] = float4(dissolveMapValue.xyz, 1);
-    // DestTexture[id] = float4((float)uv.x, (float)uv.y, 1, 1);
-    // DestTexture[uv] = float4(
-    //     id.x / DestTextureWidth,
-    //     id.y / DestTextureHeight,
-    //     0,
-    //     1
-    // );
-    // DestTexture[uv] = float4(id.y * DestTextureWidth + id.x < TrianglesCount ? 1 : 0, 0, 0, 1);
-    // DestTexture[uv] = float4(0, 0, 0, 1);
-    // destTexture[id] = float4(1, 0, 0, 1);
 }

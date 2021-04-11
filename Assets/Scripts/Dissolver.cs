@@ -5,8 +5,6 @@ using UnityEngine.VFX;
 
 public class Dissolver : MonoBehaviour
 {
-    [SerializeField]
-    private MeshRenderer _dissolveLitMeshRenderer;
 
     [SerializeField]
     private ComputeShader _computeShader;
@@ -34,6 +32,9 @@ public class Dissolver : MonoBehaviour
 
     [SerializeField]
     private GameObject _targetObject;
+
+
+    private MeshRenderer _targetMeshRenderer;
 
     private MeshFilter _targetMeshFilter;
     private Mesh _targetMesh;
@@ -77,6 +78,8 @@ public class Dissolver : MonoBehaviour
     void Start()
     {
         // init member
+
+        _targetMeshRenderer = _targetObject.GetComponent<MeshRenderer>();
 
         _targetMeshFilter = _targetObject.GetComponent<MeshFilter>();
         _targetMesh = _targetMeshFilter.mesh;
@@ -191,7 +194,7 @@ public class Dissolver : MonoBehaviour
         // # DissolveEdgeFadeOut
         // Vector1_163470858c784a7cb704a8fc07733679
 
-        _dissolveLitMeshRenderer.GetPropertyBlock(_dissolveLitMeshMaterialPropertyBlock);
+        _targetMeshRenderer.GetPropertyBlock(_dissolveLitMeshMaterialPropertyBlock);
         // _dissolveLitMeshMaterialPropertyBlock.SetTexture("_DissolveMap", _dissolveMap);
         _dissolveLitMeshMaterialPropertyBlock.SetTexture(
             "Texture2D_54ef741b959443bd9e9b02b73af70d78",
@@ -218,7 +221,7 @@ public class Dissolver : MonoBehaviour
             "Vector1_163470858c784a7cb704a8fc07733679",
             _edgeFadeOut
         );
-        _dissolveLitMeshRenderer.SetPropertyBlock(_dissolveLitMeshMaterialPropertyBlock);
+        _targetMeshRenderer.SetPropertyBlock(_dissolveLitMeshMaterialPropertyBlock);
 
         // for debug
 
