@@ -36,23 +36,23 @@ float random (float2 st) {
 
 // // ref: https://github.com/keijiro/Smrvfx/blob/d4d84cc60fe3f53055251510bf5cc47f87ad2333/Packages/jp.keijiro.smrvfx/Resources/SkinnedMeshBaker.compute
 // // Hash function from H. Schechter & R. Bridson, goo.gl/RXiKaH
-// uint Hash(uint s)
-// {
-//     s ^= 2747636419u;
-//     s *= 2654435769u;
-//     s ^= s >> 16;
-//     s *= 2654435769u;
-//     s ^= s >> 16;
-//     s *= 2654435769u;
-//     return s;
-// }
+uint Hash(uint s)
+{
+    s ^= 2747636419u;
+    s *= 2654435769u;
+    s ^= s >> 16;
+    s *= 2654435769u;
+    s ^= s >> 16;
+    s *= 2654435769u;
+    return s;
+}
 
 [numthreads(1,1,1)]
 void CSMain (uint2 id : SV_DispatchThreadID)
 {
     // random sampling
-    // uint targetIndex = Hash(id.x + id.y) % SampleCount;
-    uint targetIndex = (uint)(random(float2((float)id.x, (float)id.y)) * SampleCount);
+    uint targetIndex = Hash(id.x + id.y) % SampleCount;
+    // uint targetIndex = (uint)(random(float2((float)id.x, (float)id.y)) * SampleCount);
 
     int ti1 = TrianglesBuffer[targetIndex * 3];
     int ti2 = TrianglesBuffer[targetIndex * 3 + 1];
@@ -101,18 +101,18 @@ void CSMain (uint2 id : SV_DispatchThreadID)
         EdgeFadeOut
     );
 
-    // PositionMap[id] = float4(wp.x, wp.y, wp.z, 1);
-    PositionMap[id] = float4(
-        lerp(
-            float3(0, 0, 0),
-            float3(wp.x, wp.y, wp.z),
-            clamp(sign(o.DissolveEdge - DissolveThreshold), 0, 1)
-        ), 1
-    );
-
     float alpha = clamp(sign(o.DissolveEdge - DissolveThreshold), 0, 1);
-    // AlphaMap[id] = float4(alpha, alpha, alpha, alpha);
-    AlphaMap[id] = float4(1, alpha, alpha, alpha);
+
+    PositionMap[id] = float4(wp.x, wp.y, wp.z, 1);
+    // PositionMap[id] = float4(
+    //     lerp(
+    //         float3(0, 0, 0),
+    //         float3(wp.x, wp.y, wp.z),
+    //         alpha
+    //     ), 1
+    // );
+
+    AlphaMap[id] = float4(alpha, alpha, alpha, alpha);
 
     // // debug: position
     // DestTexture[id] = float4(

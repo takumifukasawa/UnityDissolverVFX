@@ -124,11 +124,10 @@ public class Dissolver : MonoBehaviour
         _computeShader.SetBuffer(kernelID, "VerticesBuffer", _verticesBuffer);
         _computeShader.SetBuffer(kernelID, "UvBuffer", _uvBuffer);
         _computeShader.SetInt("SampleCount", triangles.Length);
-        _computeShader.SetInt("SrcMapWidth", _dissolveMap.width);
-        _computeShader.SetInt("SrcMapHeight", _dissolveMap.height);
+        _computeShader.SetInt("DissolveMapWidth", _dissolveMap.width);
+        _computeShader.SetInt("DissolveMapHeight", _dissolveMap.height);
         _computeShader.SetInt("DestMapWidth", _destMapWidth);
         _computeShader.SetInt("DestMapHeight", _destMapHeight);
-        _computeShader.SetFloat("DissolveThreshold", _dissolveThreshold);
 
         // init material
 
@@ -159,6 +158,7 @@ public class Dissolver : MonoBehaviour
         _computeShader.SetFloat("EdgeOut", _edgeOut);
         _computeShader.SetFloat("EdgeFadeOut", _edgeFadeOut);
         _computeShader.SetMatrix("Transform", _targetObject.transform.localToWorldMatrix);
+        _computeShader.SetFloat("DissolveThreshold", _dissolveThreshold);
 
         _computeShader.Dispatch(
             kernelID,
