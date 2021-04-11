@@ -347,10 +347,10 @@ MonoBehaviour:
   _computeShader: {fileID: 7200000, guid: 0239b0416ad376a4f95934f58cbd448e, type: 3}
   _dissolveMap: {fileID: 2800000, guid: e328a3f4f90283c4d9a60468dafc2f1d, type: 3}
   _dissolveRate: 0.528
-  _edgeFadeIn: 0.48
-  _edgeIn: 0.49
+  _edgeFadeIn: 0.46
+  _edgeIn: 0.48
   _edgeOut: 0.51
-  _edgeFadeOut: 0.52
+  _edgeFadeOut: 0.53
   _targetObject: {fileID: 313532230}
   _visualEffect: {fileID: 1767914829}
   _debugPlaneMeshRenderer: {fileID: 675206762}
@@ -1004,13 +1004,13 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 4096
+      - m_Value: 4102.13
         m_Name: SpawnRate
         m_Overridden: 1
       - m_Value: 0.025
         m_Name: GlobalScale
         m_Overridden: 1
-      - m_Value: 1
+      - m_Value: 0.1
         m_Name: GlobalLifetime
         m_Overridden: 1
     m_Vector2f:
@@ -1022,7 +1022,10 @@ VisualEffect:
     m_Uint:
       m_Array: []
     m_Int:
-      m_Array: []
+      m_Array:
+      - m_Value: 8192
+        m_Name: SpawnRate
+        m_Overridden: 1
     m_Matrix4x4f:
       m_Array: []
     m_AnimationCurve:

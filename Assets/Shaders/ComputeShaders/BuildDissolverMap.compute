@@ -14,11 +14,11 @@ float EdgeIn;
 float EdgeOut;
 float EdgeFadeOut;
 float4x4 Transform;
-uint SampleCount;
+uint TrianglesCount;
 uint DissolveMapWidth;
 uint DissolveMapHeight;
-uint DestTextureWidth;
-uint DestTextureHeight;
+uint DestMapWidth;
+uint DestMapHeight;
 float DissolveThreshold;
 float Time;
 
@@ -51,34 +51,45 @@ float random (float2 st) {
 [numthreads(1,1,1)]
 void CSMain (uint2 id : SV_DispatchThreadID)
 {
+    // float idx = (float)id.x;
+    // float idy = (float)id.y;
     float idx = (float)id.x + Time;
     float idy = (float)id.y + Time;
+    // float2 currentId = float2(idx, idy);
 
     // random sampling
-    // uint targetIndex = Hash(id.x + id.y) % SampleCount;
-    uint targetIndex = (uint)(random(float2(idx, idy)) * SampleCount);
+    // uint targetIndex = Hash(id.x + id.y) % TrianglesCount;
+    uint targetIndex = (uint)(random(float2(idx, idy)) * TrianglesCount) / 3;
 
-    int ti1 = TrianglesBuffer[targetIndex * 3];
-    int ti2 = TrianglesBuffer[targetIndex * 3 + 1];
-    int ti3 = TrianglesBuffer[targetIndex * 3 + 2];
+    // for debug
+    // targetIndex = id.y * DestMapWidth + id.x;
 
-    float3 v1 = VerticesBuffer[ti1];
-    float3 v2 = VerticesBuffer[ti2];
-    float3 v3 = VerticesBuffer[ti3];
+    int i1 = TrianglesBuffer[targetIndex * 3];
+    int i2 = TrianglesBuffer[targetIndex * 3 + 1];
+    int i3 = TrianglesBuffer[targetIndex * 3 + 2];
 
-    float2 uv1 = UvBuffer[ti1];
-    float2 uv2 = UvBuffer[ti2];
-    float2 uv3 = UvBuffer[ti3];
+    float3 v1 = VerticesBuffer[i1];
+    float3 v2 = VerticesBuffer[i2];
+    float3 v3 = VerticesBuffer[i3];
+
+    float2 uv1 = UvBuffer[i1];
+    float2 uv2 = UvBuffer[i2];
+    float2 uv3 = UvBuffer[i3];
 
     float weight1 = lerp(0, 1, random(float2(idx, idy)));
     float weight2 = lerp(0, 1 - weight1, random(float2(idy, idx)));
     float weight3 = 1 - (weight1 + weight2);
+    
+    // // for debug
+    // weight1 = 0.333;
+    // weight2 = 0.333;
+    // weight3 = 0.333;
 
     float2 uv =
         uv1 * weight1 +
         uv2 * weight2 +
         uv3 * weight3;
-    
+
     float4 lp1 = float4(v1.x, v1.y, v1.z, 1);
     float4 lp2 = float4(v2.x, v2.y, v2.z, 1);
     float4 lp3 = float4(v3.x, v3.y, v3.z, 1);
@@ -108,6 +119,9 @@ void CSMain (uint2 id : SV_DispatchThreadID)
     float alpha = clamp(sign(o.DissolveEdge - DissolveThreshold), 0, 1);
 
     PositionMap[id] = float4(wp.x, wp.y, wp.z, 1);
+    // PositionMap[id] = float4(wp1.x, wp1.y, wp1.z, 1);
+    // PositionMap[id] = float4(wp2.x, wp2.y, wp2.z, 1);
+    // PositionMap[id] = float4(wp3.x, wp3.y, wp3.z, 1);
     // PositionMap[id] = float4(
     //     lerp(
     //         float3(0, 0, 0),
@@ -116,7 +130,13 @@ void CSMain (uint2 id : SV_DispatchThreadID)
     //     ), 1
     // );
 
+    // for debug
+    // PositionMap[id] = float4(uv.x, uv.y, 1, 1);
+    // PositionMap[id] = float4(o.DissolveEdge, 0, 0, 1);
+    // PositionMap[id] = float4(o.DissolveEdge, 0, 0, 1);
+
     AlphaMap[id] = float4(alpha, alpha, alpha, alpha);
+
 
     // // debug: position
     // DestTexture[id] = float4(
@@ -124,7 +144,7 @@ void CSMain (uint2 id : SV_DispatchThreadID)
     // );
 
     // uint index = id.y * DestTextureWidth + id.x;
-    // float r = random(float2((float)id.x, (float)id.y)) * (float)(index < SampleCount ? 1 : 0);
+    // float r = random(float2((float)id.x, (float)id.y)) * (float)(index < TrianglesCount ? 1 : 0);
     // // DestTexture[id] = float4(r, r, 1, 1);
     // DestTexture[id] = float4(o.DissolveEdge, 0, 0, 1);
 
@@ -137,7 +157,7 @@ void CSMain (uint2 id : SV_DispatchThreadID)
     //     0,
     //     1
     // );
-    // DestTexture[uv] = float4(id.y * DestTextureWidth + id.x < SampleCount ? 1 : 0, 0, 0, 1);
+    // DestTexture[uv] = float4(id.y * DestTextureWidth + id.x < TrianglesCount ? 1 : 0, 0, 0, 1);
     // DestTexture[uv] = float4(0, 0, 0, 1);
     // destTexture[id] = float4(1, 0, 0, 1);
 }
