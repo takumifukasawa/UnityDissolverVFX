@@ -6542,9 +6542,9 @@ MonoBehaviour:
   - {fileID: 8926484042661614995}
   - {fileID: 8926484042661615017}
   dataType: 1
-  capacity: 131072
-  stripCapacity: 1024
-  particlePerStripCount: 128
+  capacity: 18582
+  stripCapacity: 57
+  particlePerStripCount: 326
   m_Space: 1
 --- !u!114 &8926484042661614991
 MonoBehaviour:
@@ -8410,7 +8410,7 @@ MonoBehaviour:
   m_UISuperCollapsed: 0
   m_InputSlots: []
   m_OutputSlots: []
-  m_Disabled: 1
+  m_Disabled: 0
   attribute: scale
   Composition: 0
   Source: 1
@@ -8603,7 +8603,7 @@ MonoBehaviour:
   m_InputSlots:
   - {fileID: 8926484042661615064}
   m_OutputSlots: []
-  m_Disabled: 0
+  m_Disabled: 1
   attribute: color
   Composition: 1
   AlphaComposition: 0
@@ -9073,7 +9073,7 @@ MonoBehaviour:
   m_UISuperCollapsed: 0
   m_InputSlots: []
   m_OutputSlots: []
-  m_Disabled: 1
+  m_Disabled: 0
   attribute: alpha
   Composition: 0
   Source: 1
@@ -9895,7 +9895,7 @@ MonoBehaviour:
   - {fileID: 8926484042661615135}
   - {fileID: 8926484042661615136}
   m_OutputSlots: []
-  m_Disabled: 1
+  m_Disabled: 0
   attribute: alpha
   Composition: 0
   SampleMode: 6
