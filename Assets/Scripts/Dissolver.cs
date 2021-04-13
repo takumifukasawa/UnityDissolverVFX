@@ -5,18 +5,11 @@ using UnityEngine.VFX;
 
 public class Dissolver : MonoBehaviour
 {
-
-    [SerializeField]
-    private GameObject _targetObject;
-
     [SerializeField]
     private ComputeShader _computeShader;
 
     [SerializeField]
     private Texture2D _dissolveMap;
-
-    // [SerializeField]
-    // private float _dissolveInput;
 
     [SerializeField, Range(0, 1)]
     private float _dissolveRate = 0.5f;
@@ -58,13 +51,8 @@ public class Dissolver : MonoBehaviour
     [SerializeField, Range(0, 1)]
     private float _dissolveThreshold = 0.5f;
 
-    // [SerializeField]
-    // private Material _debugPlane;
-
     private MaterialPropertyBlock _dissolveLitMeshMaterialPropertyBlock;
     private MaterialPropertyBlock _debugPlaneMaterialPropertyBlock;
-
-    // private RenderTexture _positionMap;
 
     private int kernelID;
 
@@ -74,14 +62,13 @@ public class Dissolver : MonoBehaviour
 
     private ComputeBuffer _uvBuffer;
 
-    // Start is called before the first frame update
     void Start()
     {
         // init member
 
-        _targetMeshRenderer = _targetObject.GetComponent<MeshRenderer>();
+        _targetMeshRenderer = GetComponent<MeshRenderer>();
 
-        _targetMeshFilter = _targetObject.GetComponent<MeshFilter>();
+        _targetMeshFilter = GetComponent<MeshFilter>();
         _targetMesh = _targetMeshFilter.mesh;
 
         // init textures
@@ -118,8 +105,6 @@ public class Dissolver : MonoBehaviour
 
         kernelID = _computeShader.FindKernel("CSMain");
 
-        // _computeShader.SetBuffer(kernelID, "Triangles", _verticesBuffer);
-
         _computeShader.SetTexture(kernelID, "DissolveMap", _dissolveMap);
         _computeShader.SetTexture(kernelID, "PositionMap", _positionMap);
         _computeShader.SetTexture(kernelID, "AlphaMap", _alphaMap);
@@ -136,24 +121,6 @@ public class Dissolver : MonoBehaviour
 
         _dissolveLitMeshMaterialPropertyBlock = new MaterialPropertyBlock();
         _debugPlaneMaterialPropertyBlock = new MaterialPropertyBlock();
-
-        // debug
-
-        // Debug.Log(_destMapWidth);
-        // Debug.Log(_destMapHeight);
-        // Debug.Log(triangles.Length);
-
-        // Debug.Log("w");
-        // Debug.Log(_positionMap.width);
-        // Debug.Log("h");
-        // Debug.Log(_positionMap.height);
-        // Debug.Log("uv length");
-        // Debug.Log(uv.Length);
-
-        // for (int i = 0; i < triangles.Length; i++)
-        // {
-        //     Debug.Log(triangles[i]);
-        // }
     }
 
     // Update is called once per frame
@@ -166,9 +133,8 @@ public class Dissolver : MonoBehaviour
         _computeShader.SetFloat("EdgeIn", _edgeIn);
         _computeShader.SetFloat("EdgeOut", _edgeOut);
         _computeShader.SetFloat("EdgeFadeOut", _edgeFadeOut);
-        _computeShader.SetMatrix("Transform", _targetObject.transform.localToWorldMatrix);
+        _computeShader.SetMatrix("Transform", transform.localToWorldMatrix);
         _computeShader.SetFloat("DissolveThreshold", _dissolveThreshold);
-        // _computeShader.SetFloat("Time", Time.time * 100 % 1024); // multiply speed and clamp time
         _computeShader.SetFloat("Time", Time.time); // multiply speed and clamp time
 
         _computeShader.Dispatch(
@@ -195,11 +161,10 @@ public class Dissolver : MonoBehaviour
         // Vector1_163470858c784a7cb704a8fc07733679
 
         _targetMeshRenderer.GetPropertyBlock(_dissolveLitMeshMaterialPropertyBlock);
-        // _dissolveLitMeshMaterialPropertyBlock.SetTexture("_DissolveMap", _dissolveMap);
+
         _dissolveLitMeshMaterialPropertyBlock.SetTexture(
             "Texture2D_54ef741b959443bd9e9b02b73af70d78",
             _dissolveMap
-        // _positionMap
         );
         _dissolveLitMeshMaterialPropertyBlock.SetFloat(
             "Vector1_63f8f76926274e71baf1152131955b40",
@@ -227,10 +192,7 @@ public class Dissolver : MonoBehaviour
 
         _debugPlaneMeshRenderer.GetPropertyBlock(_debugPlaneMaterialPropertyBlock);
         _debugPlaneMaterialPropertyBlock.SetTexture("_BaseMap", _positionMap);
-        // _debugPlaneMaterialPropertyBlock.SetTexture("_BaseMap", _alphaMap);
         _debugPlaneMeshRenderer.SetPropertyBlock(_debugPlaneMaterialPropertyBlock);
-
-        // _debugPlane.SetTexture("_BaseMap", _positionMap);
     }
 
     void OnDisable()
