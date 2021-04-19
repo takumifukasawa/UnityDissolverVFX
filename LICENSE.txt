@@ -1,0 +1,16 @@
+
+This package contains the following software components:
+
+- Catlike Coding Unity Tutorials / Basics 05: Compute Shaders
+
+"Catlike Coding Unity Tutorials / Basic 05: Compute Shaders" files placed in "Assets/CatlikeCodingSample".
+
+These files are distributed under the "Catlike Coding Unity Tutorials / Basics 05: Compute Shaders" (MIT-0).
+
+Plese see the following page for complete terms.
+
+https://bitbucket.org/catlikecodingunitytutorials/basics-05-compute-shaders/src/master/
+
+---
+
+All other components in this package is released into the public domain.
