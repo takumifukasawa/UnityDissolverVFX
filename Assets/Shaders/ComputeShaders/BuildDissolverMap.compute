@@ -111,9 +111,12 @@ void CSMain (uint2 id : SV_DispatchThreadID)
         wp2 * weight2 +
         wp3 * weight3;
 
+    // TODO: calc real normal
     // float3 wn = CalcNormal(wp1 * weight1, wp2 * weight2, wp3 * weight3);
+
+    // fake normal 
     float3 wn = CalcNormal(wp1, wp2, wp3);
-    wn = (wn * 0.5) + 0.5;
+    wn = (wn * 0.5) + 0.5; // -1 ~ 1 => 0 ~ 1
 
     float4 dissolveMapValue = DissolveMap[uint2(
         (uint)(uv.x * DissolveMapWidth),
