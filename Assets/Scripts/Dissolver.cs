@@ -40,6 +40,7 @@ public class Dissolver : MonoBehaviour
 
     // [SerializeField]
     private RenderTexture _positionMap;
+    private RenderTexture _normalMap;
     private RenderTexture _alphaMap;
 
     [SerializeField]
@@ -87,6 +88,13 @@ public class Dissolver : MonoBehaviour
         );
         _alphaMap.Create();
 
+        _normalMap = CreateTexture(
+            _destMapWidth,
+            _destMapHeight,
+            RenderTextureFormat.ARGB32
+        );
+        _normalMap.Create();
+
         // init buffer
 
         int[] triangles = _targetMesh.GetTriangles(0);
@@ -107,6 +115,7 @@ public class Dissolver : MonoBehaviour
 
         _computeShader.SetTexture(kernelID, "DissolveMap", _dissolveMap);
         _computeShader.SetTexture(kernelID, "PositionMap", _positionMap);
+        _computeShader.SetTexture(kernelID, "NormalMap", _normalMap);
         _computeShader.SetTexture(kernelID, "AlphaMap", _alphaMap);
         _computeShader.SetBuffer(kernelID, "TrianglesBuffer", _trianglesBuffer);
         _computeShader.SetBuffer(kernelID, "VerticesBuffer", _verticesBuffer);
@@ -191,7 +200,7 @@ public class Dissolver : MonoBehaviour
         // for debug
 
         _debugPlaneMeshRenderer.GetPropertyBlock(_debugPlaneMaterialPropertyBlock);
-        _debugPlaneMaterialPropertyBlock.SetTexture("_BaseMap", _positionMap);
+        _debugPlaneMaterialPropertyBlock.SetTexture("_BaseMap", _normalMap);
         _debugPlaneMeshRenderer.SetPropertyBlock(_debugPlaneMaterialPropertyBlock);
     }
 
@@ -243,6 +252,7 @@ public class Dissolver : MonoBehaviour
         _uvBuffer = null;
 
         DestroyObj(_positionMap);
+        DestroyObj(_normalMap);
         DestroyObj(_alphaMap);
     }
 }

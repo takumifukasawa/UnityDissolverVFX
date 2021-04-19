@@ -25,6 +25,7 @@ float Time;
 // outputs
 
 RWTexture2D<float4> PositionMap;
+RWTexture2D<float4> NormalMap;
 RWTexture2D<float4> AlphaMap;
 
 // ref:
@@ -48,6 +49,10 @@ float random (float2 st) {
 //     return s;
 // }
 
+float3 CalcNormal(float3 v1, float3 v2, float3 v3) {
+    return normalize(cross(v2 - v1, v3 - v1));
+}
+
 [numthreads(1,1,1)]
 void CSMain (uint2 id : SV_DispatchThreadID)
 {
@@ -58,7 +63,7 @@ void CSMain (uint2 id : SV_DispatchThreadID)
     // float2 currentId = float2(idx, idy);
 
     // random sampling
-    // uint targetIndex = Hash(id.x + id.y) % TrianglesCount;
+    // uint targetIndex = random(float2(idx, idy)) % TrianglesCount;
     uint targetIndex = (uint)(random(float2(idx, idy)) * TrianglesCount);
 
     // for debug
@@ -106,6 +111,8 @@ void CSMain (uint2 id : SV_DispatchThreadID)
         wp2 * weight2 +
         wp3 * weight3;
 
+    float3 wn = CalcNormal(wp1 * weight1, wp2 * weight2, wp3 * weight3);
+
     float4 dissolveMapValue = DissolveMap[uint2(
         (uint)(uv.x * DissolveMapWidth),
         (uint)(uv.y * DissolveMapHeight)
@@ -123,6 +130,8 @@ void CSMain (uint2 id : SV_DispatchThreadID)
     float alpha = clamp(sign(o.DissolveEdge - DissolveThreshold), 0, 1);
 
     PositionMap[id] = float4(wp.x, wp.y, wp.z, 1);
+
+    NormalMap[id] = float4(wn.x, wn.y, wn.z, 1);
 
     AlphaMap[id] = float4(alpha, alpha, alpha, alpha);
 }

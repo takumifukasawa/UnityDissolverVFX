@@ -1666,7 +1666,7 @@ VisualEffect:
       - m_Value: 4102.13
         m_Name: SpawnRate
         m_Overridden: 1
-      - m_Value: 0.025
+      - m_Value: 0.03
         m_Name: GlobalScale
         m_Overridden: 1
       - m_Value: 1
