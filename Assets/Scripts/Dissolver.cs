@@ -36,14 +36,6 @@ public class Dissolver : MonoBehaviour
     private VisualEffect _visualEffect;
 
     [SerializeField]
-    private MeshRenderer _debugPlaneMeshRenderer;
-
-    // [SerializeField]
-    private RenderTexture _positionMap;
-    private RenderTexture _normalMap;
-    private RenderTexture _alphaMap;
-
-    [SerializeField]
     private int _destMapWidth = 512;
 
     [SerializeField]
@@ -52,8 +44,17 @@ public class Dissolver : MonoBehaviour
     [SerializeField, Range(0, 1)]
     private float _dissolveThreshold = 0.5f;
 
-    private MaterialPropertyBlock _dissolveLitMeshMaterialPropertyBlock;
-    private MaterialPropertyBlock _debugPlaneMaterialPropertyBlock;
+    // for debug
+    [SerializeField]
+    private MeshRenderer _debugPositionMapMeshRenderer;
+
+    // for debug
+    [SerializeField]
+    private MeshRenderer _debugNormalMapMeshRenderer;
+
+    private RenderTexture _positionMap;
+    private RenderTexture _normalMap;
+    private RenderTexture _alphaMap;
 
     private int kernelID;
 
@@ -62,6 +63,12 @@ public class Dissolver : MonoBehaviour
     private ComputeBuffer _verticesBuffer;
 
     private ComputeBuffer _uvBuffer;
+
+    private MaterialPropertyBlock _dissolveLitMeshMaterialPropertyBlock;
+
+    // for debug
+    private MaterialPropertyBlock _debugPositionMapMaterialPropertyBlock;
+    private MaterialPropertyBlock _debugNormalMapMaterialPropertyBlock;
 
     void Start()
     {
@@ -84,7 +91,7 @@ public class Dissolver : MonoBehaviour
         _alphaMap = CreateTexture(
             _destMapWidth,
             _destMapHeight,
-            RenderTextureFormat.ARGB32
+            RenderTextureFormat.ARGBFloat
         );
         _alphaMap.Create();
 
@@ -129,7 +136,11 @@ public class Dissolver : MonoBehaviour
         // init material
 
         _dissolveLitMeshMaterialPropertyBlock = new MaterialPropertyBlock();
-        _debugPlaneMaterialPropertyBlock = new MaterialPropertyBlock();
+
+        // for debug
+
+        _debugPositionMapMaterialPropertyBlock = new MaterialPropertyBlock();
+        _debugNormalMapMaterialPropertyBlock = new MaterialPropertyBlock();
     }
 
     // Update is called once per frame
@@ -154,6 +165,7 @@ public class Dissolver : MonoBehaviour
         );
 
         _visualEffect.SetTexture("PositionMap", _positionMap);
+        _visualEffect.SetTexture("NormalMap", _normalMap);
         _visualEffect.SetTexture("AlphaMap", _alphaMap);
 
         // # DissolveMap
@@ -199,9 +211,13 @@ public class Dissolver : MonoBehaviour
 
         // for debug
 
-        _debugPlaneMeshRenderer.GetPropertyBlock(_debugPlaneMaterialPropertyBlock);
-        _debugPlaneMaterialPropertyBlock.SetTexture("_BaseMap", _normalMap);
-        _debugPlaneMeshRenderer.SetPropertyBlock(_debugPlaneMaterialPropertyBlock);
+        _debugPositionMapMeshRenderer.GetPropertyBlock(_debugPositionMapMaterialPropertyBlock);
+        _debugPositionMapMaterialPropertyBlock.SetTexture("_BaseMap", _positionMap);
+        _debugPositionMapMeshRenderer.SetPropertyBlock(_debugPositionMapMaterialPropertyBlock);
+
+        _debugNormalMapMeshRenderer.GetPropertyBlock(_debugNormalMapMaterialPropertyBlock);
+        _debugNormalMapMaterialPropertyBlock.SetTexture("_BaseMap", _normalMap);
+        _debugNormalMapMeshRenderer.SetPropertyBlock(_debugNormalMapMaterialPropertyBlock);
     }
 
     void OnDisable()
