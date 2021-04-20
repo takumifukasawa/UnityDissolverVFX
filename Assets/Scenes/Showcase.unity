@@ -2050,16 +2050,16 @@ VisualEffect:
       - m_Value: 1
         m_Name: GlobalLifetime
         m_Overridden: 1
-      - m_Value: 0.08
+      - m_Value: 0.16
         m_Name: ParticleMinLifetime
         m_Overridden: 1
-      - m_Value: 0.16
+      - m_Value: 0.24
         m_Name: ParticleMaxLifetime
         m_Overridden: 1
-      - m_Value: 0.2
+      - m_Value: 0
         m_Name: MinSpeed
         m_Overridden: 1
-      - m_Value: 0.35
+      - m_Value: 0
         m_Name: MaxSpeed
         m_Overridden: 1
       - m_Value: 0.02
@@ -2074,10 +2074,10 @@ VisualEffect:
       - m_Value: 0.26
         m_Name: StripMaxLifetime
         m_Overridden: 1
-      - m_Value: 5.88
+      - m_Value: 1.83
         m_Name: ParticleTurbulenceIntensity
         m_Overridden: 1
-      - m_Value: 0.88
+      - m_Value: 0.42
         m_Name: ParticleTurbulenceDrag
         m_Overridden: 1
     m_Vector2f:
@@ -2104,15 +2104,15 @@ VisualEffect:
       m_Array:
       - m_Value:
           serializedVersion: 2
-          key0: {r: 2.9082286, g: 38.35462, b: 55.547184, a: 1}
-          key1: {r: 4.0034304, g: 52.55176, b: 54.61825, a: 0}
+          key0: {r: 4.0034304, g: 35.928364, b: 54.61825, a: 1}
+          key1: {r: 4.0034304, g: 35.928364, b: 54.61825, a: 1}
           key2: {r: 2.9082286, g: 55.547184, b: 33.222305, a: 0}
           key3: {r: 0, g: 0, b: 0, a: 0}
           key4: {r: 0, g: 0, b: 0, a: 0}
           key5: {r: 0, g: 0, b: 0, a: 0}
           key6: {r: 0, g: 0, b: 0, a: 0}
           key7: {r: 0, g: 0, b: 0, a: 0}
-          ctime0: 31997
+          ctime0: 0
           ctime1: 65535
           ctime2: 65535
           ctime3: 0
@@ -2120,8 +2120,8 @@ VisualEffect:
           ctime5: 0
           ctime6: 0
           ctime7: 0
-          atime0: 6554
-          atime1: 57440
+          atime0: 0
+          atime1: 65535
           atime2: 65535
           atime3: 0
           atime4: 0
@@ -2130,7 +2130,7 @@ VisualEffect:
           atime7: 0
           m_Mode: 0
           m_NumColorKeys: 2
-          m_NumAlphaKeys: 3
+          m_NumAlphaKeys: 2
         m_Name: Color
         m_Overridden: 1
     m_NamedObject:
