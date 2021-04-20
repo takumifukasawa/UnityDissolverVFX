@@ -6,6 +6,12 @@ using UnityEngine.VFX;
 public class Dissolver : MonoBehaviour
 {
     [SerializeField]
+    private MeshRenderer _targetMeshRenderer;
+
+    [SerializeField]
+    private MeshFilter _targetMeshFilter;
+
+    [SerializeField]
     private ComputeShader _computeShader;
 
     [SerializeField]
@@ -28,11 +34,6 @@ public class Dissolver : MonoBehaviour
 
     [SerializeField, Range(0, 10)]
     private float _timeMultiplier = 1f;
-
-    private MeshRenderer _targetMeshRenderer;
-
-    private MeshFilter _targetMeshFilter;
-    private Mesh _targetMesh;
 
     [SerializeField]
     private VisualEffect _visualEffect;
@@ -58,6 +59,8 @@ public class Dissolver : MonoBehaviour
     [SerializeField]
     private MeshRenderer _debugAlphaMapMeshRenderer;
 
+    private Mesh _targetMesh;
+
     private RenderTexture _positionMap;
     private RenderTexture _normalMap;
     private RenderTexture _alphaMap;
@@ -79,11 +82,8 @@ public class Dissolver : MonoBehaviour
 
     void Start()
     {
-        // init member
+        // init mesh
 
-        _targetMeshRenderer = GetComponent<MeshRenderer>();
-
-        _targetMeshFilter = GetComponent<MeshFilter>();
         _targetMesh = _targetMeshFilter.mesh;
 
         // init textures
