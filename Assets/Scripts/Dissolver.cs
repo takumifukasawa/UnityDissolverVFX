@@ -26,6 +26,8 @@ public class Dissolver : MonoBehaviour
     [SerializeField, Range(0, 1)]
     private float _edgeFadeOut = 0.52f;
 
+    [SerializeField, Range(0, 10)]
+    private float _timeMultiplier = 1f;
 
     private MeshRenderer _targetMeshRenderer;
 
@@ -52,6 +54,10 @@ public class Dissolver : MonoBehaviour
     [SerializeField]
     private MeshRenderer _debugNormalMapMeshRenderer;
 
+    // for debug
+    [SerializeField]
+    private MeshRenderer _debugAlphaMapMeshRenderer;
+
     private RenderTexture _positionMap;
     private RenderTexture _normalMap;
     private RenderTexture _alphaMap;
@@ -69,6 +75,7 @@ public class Dissolver : MonoBehaviour
     // for debug
     private MaterialPropertyBlock _debugPositionMapMaterialPropertyBlock;
     private MaterialPropertyBlock _debugNormalMapMaterialPropertyBlock;
+    private MaterialPropertyBlock _debugAlphaMapMaterialPropertyBlock;
 
     void Start()
     {
@@ -141,12 +148,12 @@ public class Dissolver : MonoBehaviour
 
         _debugPositionMapMaterialPropertyBlock = new MaterialPropertyBlock();
         _debugNormalMapMaterialPropertyBlock = new MaterialPropertyBlock();
+        _debugAlphaMapMaterialPropertyBlock = new MaterialPropertyBlock();
     }
 
     // Update is called once per frame
     void Update()
     {
-        // _computeShader.SetFloat("dissolveInput", _dissolveInput);
         _computeShader.SetFloat("DissolveRate", _dissolveRate);
         _computeShader.SetFloat("EdgeFadeIn", _edgeFadeIn);
         _computeShader.SetFloat("EdgeFadeIn", _edgeFadeIn);
@@ -155,7 +162,7 @@ public class Dissolver : MonoBehaviour
         _computeShader.SetFloat("EdgeFadeOut", _edgeFadeOut);
         _computeShader.SetMatrix("Transform", transform.localToWorldMatrix);
         _computeShader.SetFloat("DissolveThreshold", _dissolveThreshold);
-        _computeShader.SetFloat("Time", Time.time); // multiply speed and clamp time
+        _computeShader.SetFloat("Time", Mathf.Repeat(Time.time * _timeMultiplier, 100f)); // multiply speed and clamp time
 
         _computeShader.Dispatch(
             kernelID,
@@ -218,6 +225,10 @@ public class Dissolver : MonoBehaviour
         _debugNormalMapMeshRenderer.GetPropertyBlock(_debugNormalMapMaterialPropertyBlock);
         _debugNormalMapMaterialPropertyBlock.SetTexture("_BaseMap", _normalMap);
         _debugNormalMapMeshRenderer.SetPropertyBlock(_debugNormalMapMaterialPropertyBlock);
+
+        _debugAlphaMapMeshRenderer.GetPropertyBlock(_debugAlphaMapMaterialPropertyBlock);
+        _debugAlphaMapMaterialPropertyBlock.SetTexture("_BaseMap", _alphaMap);
+        _debugAlphaMapMeshRenderer.SetPropertyBlock(_debugAlphaMapMaterialPropertyBlock);
     }
 
     void OnDisable()

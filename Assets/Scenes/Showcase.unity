@@ -258,7 +258,7 @@ GameObject:
   - component: {fileID: 157640985}
   - component: {fileID: 157640984}
   m_Layer: 0
-  m_Name: Plane (2)
+  m_Name: NormalMapDebugger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -450,6 +450,102 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &305953925
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 305953926}
+  - component: {fileID: 305953929}
+  - component: {fileID: 305953928}
+  - component: {fileID: 305953927}
+  m_Layer: 0
+  m_Name: AlphaMapDebugger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &305953926
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 305953925}
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0.7071068, w: 0}
+  m_LocalPosition: {x: 4.835, y: 0.724, z: 0}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
+  m_Children: []
+  m_Father: {fileID: 1875126552}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 90, y: 90, z: -90}
+--- !u!64 &305953927
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 305953925}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &305953928
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 305953925}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 4dfd0bbabee1c87438167ca9c7ca44d2, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &305953929
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 305953925}
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &307738663
 GameObject:
   m_ObjectHideFlags: 0
@@ -599,12 +695,14 @@ MonoBehaviour:
   _edgeIn: 0.48
   _edgeOut: 0.51
   _edgeFadeOut: 0.53
+  _timeMultiplier: 1
   _visualEffect: {fileID: 8265773}
   _destMapWidth: 1024
   _destMapHeight: 1024
   _dissolveThreshold: 0.5
   _debugPositionMapMeshRenderer: {fileID: 0}
   _debugNormalMapMeshRenderer: {fileID: 0}
+  _debugAlphaMapMeshRenderer: {fileID: 0}
 --- !u!64 &309146042
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -783,12 +881,14 @@ MonoBehaviour:
   _edgeIn: 0.48
   _edgeOut: 0.51
   _edgeFadeOut: 0.53
+  _timeMultiplier: 1
   _visualEffect: {fileID: 1767914829}
   _destMapWidth: 1024
   _destMapHeight: 1024
   _dissolveThreshold: 0.5
   _debugPositionMapMeshRenderer: {fileID: 675206762}
   _debugNormalMapMeshRenderer: {fileID: 157640985}
+  _debugAlphaMapMeshRenderer: {fileID: 305953928}
 --- !u!1 &328062387
 GameObject:
   m_ObjectHideFlags: 0
@@ -954,12 +1054,14 @@ MonoBehaviour:
   _edgeIn: 0.48
   _edgeOut: 0.51
   _edgeFadeOut: 0.53
+  _timeMultiplier: 1
   _visualEffect: {fileID: 1767914829}
   _destMapWidth: 1024
   _destMapHeight: 1024
   _dissolveThreshold: 0.5
   _debugPositionMapMeshRenderer: {fileID: 0}
   _debugNormalMapMeshRenderer: {fileID: 0}
+  _debugAlphaMapMeshRenderer: {fileID: 0}
 --- !u!4 &502358375
 Transform:
   m_ObjectHideFlags: 0
@@ -1164,7 +1266,7 @@ GameObject:
   - component: {fileID: 675206762}
   - component: {fileID: 675206761}
   m_Layer: 0
-  m_Name: Plane (1)
+  m_Name: PositionMapDebugger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1585,12 +1687,14 @@ MonoBehaviour:
   _edgeIn: 0.48
   _edgeOut: 0.51
   _edgeFadeOut: 0.53
+  _timeMultiplier: 1
   _visualEffect: {fileID: 2032015453}
   _destMapWidth: 1024
   _destMapHeight: 1024
   _dissolveThreshold: 0.5
   _debugPositionMapMeshRenderer: {fileID: 0}
   _debugNormalMapMeshRenderer: {fileID: 0}
+  _debugAlphaMapMeshRenderer: {fileID: 0}
 --- !u!1 &1355211787
 GameObject:
   m_ObjectHideFlags: 0
@@ -1772,6 +1876,30 @@ VisualEffect:
       - m_Value: 1
         m_Name: GlobalLifetime
         m_Overridden: 1
+      - m_Value: 0.26
+        m_Name: ParticleMinLifetime
+        m_Overridden: 1
+      - m_Value: 0.69
+        m_Name: ParticleMaxLifetime
+        m_Overridden: 1
+      - m_Value: 2.27
+        m_Name: MinSpeed
+        m_Overridden: 1
+      - m_Value: 6.57
+        m_Name: MaxSpeed
+        m_Overridden: 1
+      - m_Value: 0.03
+        m_Name: ParticleMinSize
+        m_Overridden: 1
+      - m_Value: 0.05
+        m_Name: ParticleMaxSize
+        m_Overridden: 1
+      - m_Value: 0.17
+        m_Name: StripMinLifetime
+        m_Overridden: 1
+      - m_Value: 0.26
+        m_Name: StripMaxLifetime
+        m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
@@ -1782,7 +1910,7 @@ VisualEffect:
       m_Array: []
     m_Int:
       m_Array:
-      - m_Value: 620
+      - m_Value: 249
         m_Name: SpawnRate
         m_Overridden: 1
     m_Matrix4x4f:
@@ -1790,7 +1918,38 @@ VisualEffect:
     m_AnimationCurve:
       m_Array: []
     m_Gradient:
-      m_Array: []
+      m_Array:
+      - m_Value:
+          serializedVersion: 2
+          key0: {r: 2.9082286, g: 38.35462, b: 55.547184, a: 1}
+          key1: {r: 2.9082286, g: 38.35462, b: 55.547184, a: 1}
+          key2: {r: 888.7547, g: 213.7603, b: 46.114635, a: 1}
+          key3: {r: 0, g: 0, b: 0, a: 0}
+          key4: {r: 0, g: 0, b: 0, a: 0}
+          key5: {r: 0, g: 0, b: 0, a: 0}
+          key6: {r: 0, g: 0, b: 0, a: 0}
+          key7: {r: 0, g: 0, b: 0, a: 0}
+          ctime0: 0
+          ctime1: 65535
+          ctime2: 65535
+          ctime3: 0
+          ctime4: 0
+          ctime5: 0
+          ctime6: 0
+          ctime7: 0
+          atime0: 0
+          atime1: 65535
+          atime2: 65535
+          atime3: 0
+          atime4: 0
+          atime5: 0
+          atime6: 0
+          atime7: 0
+          m_Mode: 0
+          m_NumColorKeys: 2
+          m_NumAlphaKeys: 2
+        m_Name: Color
+        m_Overridden: 1
     m_NamedObject:
       m_Array: []
     m_Bool:
@@ -1840,6 +1999,7 @@ Transform:
   - {fileID: 1767914830}
   - {fileID: 675206764}
   - {fileID: 157640983}
+  - {fileID: 305953926}
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
