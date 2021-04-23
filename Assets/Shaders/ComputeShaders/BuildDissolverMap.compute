@@ -30,44 +30,24 @@ RWTexture2D<float4> AlphaMap;
 
 // ref:
 // https://stackoverflow.com/questions/4200224/random-noise-functions-for-glsl
-float random (float2 st) {
+float Random (float2 st) {
     return frac(sin(dot(st.xy,
                          float2(12.9898,78.233)))*
         43758.5453123);
 }
 
-// // ref: https://github.com/keijiro/Smrvfx/blob/d4d84cc60fe3f53055251510bf5cc47f87ad2333/Packages/jp.keijiro.smrvfx/Resources/SkinnedMeshBaker.compute
-// // Hash function from H. Schechter & R. Bridson, goo.gl/RXiKaH
-// uint Hash(uint s)
-// {
-//     s ^= 2747636419u;
-//     s *= 2654435769u;
-//     s ^= s >> 16;
-//     s *= 2654435769u;
-//     s ^= s >> 16;
-//     s *= 2654435769u;
-//     return s;
-// }
-
-float3 CalcNormal(float3 v1, float3 v2, float3 v3) {
+float3 CalcNormal (float3 v1, float3 v2, float3 v3) {
     return normalize(cross(v2 - v1, v3 - v1));
 }
 
 [numthreads(1,1,1)]
 void CSMain (uint2 id : SV_DispatchThreadID)
 {
-    // float idx = (float)id.x;
-    // float idy = (float)id.y;
     float idx = (float)id.x + Time;
     float idy = (float)id.y + Time;
-    // float2 currentId = float2(idx, idy);
 
     // random sampling
-    // uint targetIndex = random(float2(idx, idy)) % TrianglesCount;
-    uint targetIndex = (uint)(random(float2(idx, idy)) * TrianglesCount);
-
-    // for debug
-    // targetIndex = id.y * DestMapWidth + id.x;
+    uint targetIndex = (uint)(Random(float2(idx, idy)) * TrianglesCount);
 
     int i1 = TrianglesBuffer[targetIndex * 3];
     int i2 = TrianglesBuffer[targetIndex * 3 + 1];
@@ -85,12 +65,12 @@ void CSMain (uint2 id : SV_DispatchThreadID)
     float weight1 = lerp(
         0,
         1,
-        random(float2((float)targetIndex + Time + 1, (float)targetIndex + Time + 2))
+        Random(float2((float)targetIndex + Time + 1, (float)targetIndex + Time + 2))
     );
     float weight2 = lerp(
         0,
         1 - weight1,
-        random(float2((float)targetIndex + Time + 3, (float)targetIndex + Time + 4))
+        Random(float2((float)targetIndex + Time + 3, (float)targetIndex + Time + 4))
     );
     float weight3 = 1 - (weight1 + weight2);
 
@@ -106,7 +86,7 @@ void CSMain (uint2 id : SV_DispatchThreadID)
     float4 wp2 = mul(Transform, lp2);
     float4 wp3 = mul(Transform, lp3);
 
-    float4 wp = 
+    float4 wp =
         wp1 * weight1 +
         wp2 * weight2 +
         wp3 * weight3;
@@ -114,7 +94,7 @@ void CSMain (uint2 id : SV_DispatchThreadID)
     // TODO: calc real normal
     // float3 wn = CalcNormal(wp1 * weight1, wp2 * weight2, wp3 * weight3);
 
-    // fake normal 
+    // fake normal
     float3 wn = CalcNormal(wp1, wp2, wp3);
     wn = (wn * 0.5) + 0.5; // -1 ~ 1 => 0 ~ 1
 
@@ -133,6 +113,10 @@ void CSMain (uint2 id : SV_DispatchThreadID)
     );
 
     float alpha = clamp(sign(o.DissolveEdge - DissolveThreshold), 0, 1);
+
+    // -----------------------------------------------------------------------
+    // テクスチャに書き込み
+    // -----------------------------------------------------------------------
 
     PositionMap[id] = float4(wp.x, wp.y, wp.z, 1);
 
