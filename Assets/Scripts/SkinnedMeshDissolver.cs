@@ -1,12 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Collections;
+using Unity.Mathematics;
 using UnityEngine.VFX;
 
 public class SkinnedMeshDissolver : MonoBehaviour
 {
     [SerializeField]
     private SkinnedMeshRenderer _targetMeshRenderer;
+
+    [SerializeField]
+    private SkinnedMeshRenderer[] _targetSkinnedMeshRenderers = null;
 
     // [SerializeField]
     // private MeshFilter _targetMeshFilter;
@@ -164,6 +169,24 @@ public class SkinnedMeshDissolver : MonoBehaviour
     void Update()
     {
         _targetMeshRenderer.BakeMesh(_targetMesh);
+
+        using (Mesh.MeshDataArray dataArray = Mesh.AcquireReadOnlyMeshData(_targetMesh))
+        {
+            Mesh.MeshData data = dataArray[0];
+            int vertexCount = data.vertexCount;
+            // position
+            NativeArray<Vector3> positionArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
+            data.GetVertices(positionArray);
+            // normal
+            NativeArray<Vector3> normalArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
+            data.GetNormals(normalArray);
+            // uv
+            NativeArray<Vector2> uvArray = new NativeArray<Vector2>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
+            data.GetUVs(0, uvArray);
+            // triangle
+            NativeArray<ushort> triangleArray = new NativeArray<ushort>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
+            data.GetIndices(triangleArray, 0);
+        }
 
         // set buffer
 
