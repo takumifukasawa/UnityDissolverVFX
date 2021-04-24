@@ -174,30 +174,21 @@ public class SkinnedMeshDissolver : MonoBehaviour
         {
             Mesh.MeshData data = dataArray[0];
             int vertexCount = data.vertexCount;
-            // position
-            NativeArray<Vector3> positionArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
-            data.GetVertices(positionArray);
-            // normal
-            NativeArray<Vector3> normalArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
-            data.GetNormals(normalArray);
-            // uv
-            NativeArray<Vector2> uvArray = new NativeArray<Vector2>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
-            data.GetUVs(0, uvArray);
-            // triangle
-            NativeArray<ushort> triangleArray = new NativeArray<ushort>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
-            data.GetIndices(triangleArray, 0);
+            using (NativeArray<Vector3> positionArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+            // using(NativeArray<Vector3> normalArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+            using (NativeArray<Vector2> uvArray = new NativeArray<Vector2>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+            using (NativeArray<ushort> triangleArray = new NativeArray<ushort>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+            {
+                data.GetVertices(positionArray);
+                // data.GetNormals(normalArray);
+                data.GetUVs(0, uvArray);
+                data.GetIndices(triangleArray, 0);
+
+                _trianglesBuffer.SetData(triangleArray);
+                _verticesBuffer.SetData(positionArray);
+                _uvBuffer.SetData(uvArray);
+            }
         }
-
-        // set buffer
-
-        int[] triangles = _targetMesh.GetTriangles(0);
-        _trianglesBuffer.SetData(triangles);
-
-        Vector3[] vertices = _targetMesh.vertices;
-        _verticesBuffer.SetData(vertices);
-
-        Vector2[] uv = _targetMesh.uv;
-        _uvBuffer.SetData(uv);
 
         _computeShader.SetFloat("DissolveRate", _dissolveRate);
         _computeShader.SetFloat("EdgeFadeIn", _edgeFadeIn);
