@@ -536,6 +536,11 @@ MonoBehaviour:
   _debugPositionMapMeshRenderer: {fileID: 675206762}
   _debugNormalMapMeshRenderer: {fileID: 157640985}
   _debugAlphaMapMeshRenderer: {fileID: 305953928}
+--- !u!137 &350402301 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6148737315974723067, guid: d443127dda3e8ee4ab3c2767ca17daac, type: 3}
+  m_PrefabInstance: {fileID: 1074881606}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &570078940
 GameObject:
   m_ObjectHideFlags: 0
@@ -1177,7 +1182,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: d443127dda3e8ee4ab3c2767ca17daac, type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d443127dda3e8ee4ab3c2767ca17daac, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1223,6 +1228,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Walking
       objectReference: {fileID: 0}
+    - target: {fileID: 3853268898807207900, guid: d443127dda3e8ee4ab3c2767ca17daac, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 713e013d2c1268940842d4ea30250b0f, type: 2}
+    - target: {fileID: 6148737315974723067, guid: d443127dda3e8ee4ab3c2767ca17daac, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 713e013d2c1268940842d4ea30250b0f, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d443127dda3e8ee4ab3c2767ca17daac, type: 3}
 --- !u!1 &1147612163
@@ -1444,7 +1457,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2097973731}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!73398921 &1202582220
 VFXRenderer:
@@ -2515,6 +2528,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _targetMeshRenderer: {fileID: 1243566506}
+  _targetSkinnedMeshRenderers:
+  - {fileID: 1243566506}
+  - {fileID: 350402301}
   _computeShader: {fileID: 7200000, guid: 0239b0416ad376a4f95934f58cbd448e, type: 3}
   _dissolveMap: {fileID: 2800000, guid: c37f77080fd7f074da1caef44b8b81bd, type: 3}
   _dissolveRate: 0.5
@@ -2781,8 +2797,8 @@ Transform:
   m_LocalPosition: {x: 7.67, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 1202582219}
   - {fileID: 2048063970}
+  - {fileID: 1202582219}
   - {fileID: 2066657535}
   - {fileID: 885898540}
   - {fileID: 1013530975}

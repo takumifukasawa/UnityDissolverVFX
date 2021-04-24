@@ -4,6 +4,7 @@ using UnityEngine;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine.VFX;
+using System.Linq;
 
 public class SkinnedMeshDissolver : MonoBehaviour
 {
@@ -78,12 +79,12 @@ public class SkinnedMeshDissolver : MonoBehaviour
 
     private ComputeBuffer _uvBuffer;
 
-    private MaterialPropertyBlock _dissolveLitMeshMaterialPropertyBlock;
+    private MaterialPropertyBlock[] _dissolveMaterialPropertyBlocks = null;
 
     // for debug
-    private MaterialPropertyBlock _debugPositionMapMaterialPropertyBlock;
-    private MaterialPropertyBlock _debugNormalMapMaterialPropertyBlock;
-    private MaterialPropertyBlock _debugAlphaMapMaterialPropertyBlock;
+    // private MaterialPropertyBlock _debugPositionMapMaterialPropertyBlock;
+    // private MaterialPropertyBlock _debugNormalMapMaterialPropertyBlock;
+    // private MaterialPropertyBlock _debugAlphaMapMaterialPropertyBlock;
 
     // private Mesh _tmpMesh;
 
@@ -122,20 +123,28 @@ public class SkinnedMeshDissolver : MonoBehaviour
 
         // init buffer
 
-        // int[] triangles = _targetMesh.GetTriangles(0);
-        int[] triangles = _targetMeshRenderer.sharedMesh.GetTriangles(0);
+        Mesh combinedMesh = new Mesh();
+        // combinedMesh.name = "hoge";
+        combinedMesh.hideFlags = HideFlags.DontSave;
+        CombineInstance[] combineInstanceArray = new CombineInstance[_targetSkinnedMeshRenderers.Length];
+        for (int i = 0; i < _targetSkinnedMeshRenderers.Length; i++)
+        {
+            combineInstanceArray[i].mesh = _targetSkinnedMeshRenderers[i].sharedMesh;
+            combineInstanceArray[i].transform = _targetSkinnedMeshRenderers[i].transform.localToWorldMatrix;
+        }
+        combinedMesh.CombineMeshes(combineInstanceArray);
+
+        // int[] triangles = _targetMeshRenderer.sharedMesh.GetTriangles(0);
+        int[] triangles = combinedMesh.triangles;
         _trianglesBuffer = new ComputeBuffer(triangles.Length, sizeof(int));
-        // _trianglesBuffer.SetData(triangles);
 
-        // Vector3[] vertices = _targetMesh.vertices;
-        Vector3[] vertices = _targetMeshRenderer.sharedMesh.vertices;
+        // Vector3[] vertices = _targetMeshRenderer.sharedMesh.vertices;
+        Vector3[] vertices = combinedMesh.vertices;
         _verticesBuffer = new ComputeBuffer(vertices.Length, sizeof(float) * 3);
-        // _verticesBuffer.SetData(vertices);
 
-        // Vector2[] uv = _targetMesh.uv;
-        Vector2[] uv = _targetMeshRenderer.sharedMesh.uv;
+        // Vector2[] uv = _targetMeshRenderer.sharedMesh.uv;
+        Vector2[] uv = combinedMesh.uv;
         _uvBuffer = new ComputeBuffer(uv.Length, sizeof(float) * 2);
-        // _uvBuffer.SetData(uv);
 
         // init compute shader
 
@@ -156,40 +165,83 @@ public class SkinnedMeshDissolver : MonoBehaviour
 
         // init material
 
-        _dissolveLitMeshMaterialPropertyBlock = new MaterialPropertyBlock();
+        _dissolveMaterialPropertyBlocks = new MaterialPropertyBlock[_targetSkinnedMeshRenderers.Length];
+        for (int i = 0; i < _targetSkinnedMeshRenderers.Length; i++)
+        {
+            _dissolveMaterialPropertyBlocks[i] = new MaterialPropertyBlock();
+        }
 
         // for debug
 
-        _debugPositionMapMaterialPropertyBlock = new MaterialPropertyBlock();
-        _debugNormalMapMaterialPropertyBlock = new MaterialPropertyBlock();
-        _debugAlphaMapMaterialPropertyBlock = new MaterialPropertyBlock();
+        // _debugPositionMapMaterialPropertyBlock = new MaterialPropertyBlock();
+        // _debugNormalMapMaterialPropertyBlock = new MaterialPropertyBlock();
+        // _debugAlphaMapMaterialPropertyBlock = new MaterialPropertyBlock();
     }
 
-    // Update is called once per frame
-    void Update()
+    int[] Bake(SkinnedMeshRenderer skinnedMeshRenderer, int vertexOffset, int triangleOffset)
     {
-        _targetMeshRenderer.BakeMesh(_targetMesh);
-
+        skinnedMeshRenderer.BakeMesh(_targetMesh);
         using (Mesh.MeshDataArray dataArray = Mesh.AcquireReadOnlyMeshData(_targetMesh))
         {
             Mesh.MeshData data = dataArray[0];
             int vertexCount = data.vertexCount;
+            int triangleCount = _targetMesh.triangles.Length;
             using (NativeArray<Vector3> positionArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
             // using(NativeArray<Vector3> normalArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
             using (NativeArray<Vector2> uvArray = new NativeArray<Vector2>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
-            using (NativeArray<ushort> triangleArray = new NativeArray<ushort>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+            using (NativeArray<ushort> triangleArray = new NativeArray<ushort>(triangleCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
             {
                 data.GetVertices(positionArray);
                 // data.GetNormals(normalArray);
                 data.GetUVs(0, uvArray);
                 data.GetIndices(triangleArray, 0);
 
-                _trianglesBuffer.SetData(triangleArray);
-                _verticesBuffer.SetData(positionArray);
-                _uvBuffer.SetData(uvArray);
+                _verticesBuffer.SetData(positionArray, 0, vertexOffset, vertexCount);
+                _uvBuffer.SetData(uvArray, 0, vertexOffset, vertexCount);
+                _trianglesBuffer.SetData(triangleArray, 0, triangleOffset, triangleCount);
             }
+
+            int[] result = new int[2];
+            result[0] = vertexCount;
+            result[1] = triangleCount;
+            return result;
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        // _targetMeshRenderer.BakeMesh(_targetMesh);
+
+        int vertexOffset = 0;
+        int triangleOffset = 0;
+        foreach (SkinnedMeshRenderer skinnedMeshRenderer in _targetSkinnedMeshRenderers)
+        {
+            int[] result = Bake(skinnedMeshRenderer, vertexOffset, triangleOffset);
+            vertexOffset += result[0];
+            triangleOffset += result[1];
         }
 
+        UpdateVFX();
+        UpdateMaterials();
+
+        // for debug
+
+        // _debugPositionMapMeshRenderer.GetPropertyBlock(_debugPositionMapMaterialPropertyBlock);
+        // _debugPositionMapMaterialPropertyBlock.SetTexture("_BaseMap", _positionMap);
+        // _debugPositionMapMeshRenderer.SetPropertyBlock(_debugPositionMapMaterialPropertyBlock);
+
+        // _debugNormalMapMeshRenderer.GetPropertyBlock(_debugNormalMapMaterialPropertyBlock);
+        // _debugNormalMapMaterialPropertyBlock.SetTexture("_BaseMap", _normalMap);
+        // _debugNormalMapMeshRenderer.SetPropertyBlock(_debugNormalMapMaterialPropertyBlock);
+
+        // _debugAlphaMapMeshRenderer.GetPropertyBlock(_debugAlphaMapMaterialPropertyBlock);
+        // _debugAlphaMapMaterialPropertyBlock.SetTexture("_BaseMap", _alphaMap);
+        // _debugAlphaMapMeshRenderer.SetPropertyBlock(_debugAlphaMapMaterialPropertyBlock);
+    }
+
+    void UpdateVFX()
+    {
         _computeShader.SetFloat("DissolveRate", _dissolveRate);
         _computeShader.SetFloat("EdgeFadeIn", _edgeFadeIn);
         _computeShader.SetFloat("EdgeFadeIn", _edgeFadeIn);
@@ -211,6 +263,11 @@ public class SkinnedMeshDissolver : MonoBehaviour
         _visualEffect.SetTexture("NormalMap", _normalMap);
         _visualEffect.SetTexture("AlphaMap", _alphaMap);
 
+
+    }
+
+    void UpdateMaterials()
+    {
         // # DissolveMap
         // Texture2D_54ef741b959443bd9e9b02b73af70d78
         // # DissolveRate
@@ -224,47 +281,38 @@ public class SkinnedMeshDissolver : MonoBehaviour
         // # DissolveEdgeFadeOut
         // Vector1_163470858c784a7cb704a8fc07733679
 
-        _targetMeshRenderer.GetPropertyBlock(_dissolveLitMeshMaterialPropertyBlock);
+        for (int i = 0; i < _targetSkinnedMeshRenderers.Length; i++)
+        {
+            SkinnedMeshRenderer skinnedMeshRenderer = _targetSkinnedMeshRenderers[i];
+            MaterialPropertyBlock materialPropertyBlock = _dissolveMaterialPropertyBlocks[i];
+            skinnedMeshRenderer.GetPropertyBlock(materialPropertyBlock);
 
-        _dissolveLitMeshMaterialPropertyBlock.SetTexture(
-            "Texture2D_54ef741b959443bd9e9b02b73af70d78",
-            _dissolveMap
-        );
-        _dissolveLitMeshMaterialPropertyBlock.SetFloat(
-            "Vector1_63f8f76926274e71baf1152131955b40",
-            _dissolveRate
-        );
-        _dissolveLitMeshMaterialPropertyBlock.SetFloat(
-            "Vector1_3a7f40d2e0244addbc31eb5c9f2b8f9d",
-            _edgeFadeIn
-        );
-        _dissolveLitMeshMaterialPropertyBlock.SetFloat(
-            "Vector1_851d11a93fec42da93e7eba4b6c35708",
-            _edgeIn
-        );
-        _dissolveLitMeshMaterialPropertyBlock.SetFloat(
-            "Vector1_44e9cc11c7704e7fbc993b924f68246d",
-            _edgeOut
-        );
-        _dissolveLitMeshMaterialPropertyBlock.SetFloat(
-            "Vector1_163470858c784a7cb704a8fc07733679",
-            _edgeFadeOut
-        );
-        _targetMeshRenderer.SetPropertyBlock(_dissolveLitMeshMaterialPropertyBlock);
-
-        // for debug
-
-        _debugPositionMapMeshRenderer.GetPropertyBlock(_debugPositionMapMaterialPropertyBlock);
-        _debugPositionMapMaterialPropertyBlock.SetTexture("_BaseMap", _positionMap);
-        _debugPositionMapMeshRenderer.SetPropertyBlock(_debugPositionMapMaterialPropertyBlock);
-
-        _debugNormalMapMeshRenderer.GetPropertyBlock(_debugNormalMapMaterialPropertyBlock);
-        _debugNormalMapMaterialPropertyBlock.SetTexture("_BaseMap", _normalMap);
-        _debugNormalMapMeshRenderer.SetPropertyBlock(_debugNormalMapMaterialPropertyBlock);
-
-        _debugAlphaMapMeshRenderer.GetPropertyBlock(_debugAlphaMapMaterialPropertyBlock);
-        _debugAlphaMapMaterialPropertyBlock.SetTexture("_BaseMap", _alphaMap);
-        _debugAlphaMapMeshRenderer.SetPropertyBlock(_debugAlphaMapMaterialPropertyBlock);
+            materialPropertyBlock.SetTexture(
+                "Texture2D_54ef741b959443bd9e9b02b73af70d78",
+                _dissolveMap
+            );
+            materialPropertyBlock.SetFloat(
+                "Vector1_63f8f76926274e71baf1152131955b40",
+                _dissolveRate
+            );
+            materialPropertyBlock.SetFloat(
+                "Vector1_3a7f40d2e0244addbc31eb5c9f2b8f9d",
+                _edgeFadeIn
+            );
+            materialPropertyBlock.SetFloat(
+                "Vector1_851d11a93fec42da93e7eba4b6c35708",
+                _edgeIn
+            );
+            materialPropertyBlock.SetFloat(
+                "Vector1_44e9cc11c7704e7fbc993b924f68246d",
+                _edgeOut
+            );
+            materialPropertyBlock.SetFloat(
+                "Vector1_163470858c784a7cb704a8fc07733679",
+                _edgeFadeOut
+            );
+            skinnedMeshRenderer.SetPropertyBlock(materialPropertyBlock);
+        }
     }
 
     void OnDisable()
