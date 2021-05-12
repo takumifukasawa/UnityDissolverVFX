@@ -197,15 +197,17 @@ public class SkinnedMeshDissolver : MonoBehaviour
 
         int vertexOffset = 0;
         int triangleOffset = 0;
+        int uvOffset = 0;
         foreach (SkinnedMeshRenderer skinnedMeshRenderer in _targetSkinnedMeshRenderers)
         {
-            int[] result = Bake(skinnedMeshRenderer, vertexOffset, triangleOffset);
+            int[] result = Bake(skinnedMeshRenderer, vertexOffset, triangleOffset, uvOffset);
             vertexOffset += result[0];
             triangleOffset += result[1];
+            uvOffset += result[2];
         }
     }
 
-    int[] Bake(SkinnedMeshRenderer skinnedMeshRenderer, int vertexOffset, int triangleOffset)
+    int[] Bake(SkinnedMeshRenderer skinnedMeshRenderer, int vertexOffset, int triangleOffset, int uvOffset)
     {
         skinnedMeshRenderer.BakeMesh(_targetMesh);
 
@@ -220,45 +222,55 @@ public class SkinnedMeshDissolver : MonoBehaviour
 
             int triangleCount = _targetMesh.triangles.Length;
 
+            // initial
+            int uvCount = 0;
+
             // int triangleCount = _targetMesh.GetIndexCount(0);
             // Debug.Log("==========");
 
-            using (NativeArray<Vector3> positionArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
-            // using(NativeArray<Vector3> normalArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
-            using (NativeArray<Vector2> uvArray = new NativeArray<Vector2>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
-            using (NativeArray<ushort> triangleArray = new NativeArray<ushort>(triangleCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+            using (NativeArray<Vector2> uvs = new NativeArray<Vector2>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
             {
-                data.GetVertices(positionArray);
-                // data.GetNormals(normalArray);
-                data.GetUVs(0, uvArray);
-                data.GetIndices(triangleArray, 0);
+                data.GetUVs(0, uvs);
+                uvCount = uvs.Length;
 
-                Debug.Log("----------------------------------------------------");
-                Debug.Log("vertex count");
-                Debug.Log(vertexCount);
-                Debug.Log("triangle count");
-                Debug.Log(triangleCount);
-                Debug.Log("positionArray length");
-                Debug.Log(positionArray.Length);
-                Debug.Log("uvArray length");
-                Debug.Log(uvArray.Length);
-                Debug.Log("triangleArray length");
-                Debug.Log(triangleArray.Length);
-                Debug.Log("positionArray[vertexCount - 1]");
-                Debug.Log(positionArray[vertexCount - 1]);
-                Debug.Log("uvArray[vertexCount - 1]");
-                Debug.Log(uvArray[vertexCount - 1]);
-                Debug.Log("triangleArray[triangleCount - 1]");
-                Debug.Log(triangleArray[triangleCount - 1]);
+                using (NativeArray<Vector3> positionArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+                // using(NativeArray<Vector3> normalArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+                using (NativeArray<Vector2> uvArray = new NativeArray<Vector2>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+                using (NativeArray<ushort> triangleArray = new NativeArray<ushort>(triangleCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+                {
+                    data.GetVertices(positionArray);
+                    // data.GetNormals(normalArray);
+                    data.GetUVs(0, uvArray);
+                    data.GetIndices(triangleArray, 0);
 
-                _verticesBuffer.SetData(positionArray, 0, vertexOffset, vertexCount);
-                _uvBuffer.SetData(uvArray, 0, vertexOffset, vertexCount);
-                _trianglesBuffer.SetData(triangleArray, 0, triangleOffset, triangleCount);
+                    Debug.Log("----------------------------------------------------");
+                    Debug.Log("vertex count");
+                    Debug.Log(vertexCount);
+                    Debug.Log("triangle count");
+                    Debug.Log(triangleCount);
+                    Debug.Log("positionArray length");
+                    Debug.Log(positionArray.Length);
+                    Debug.Log("uvArray length");
+                    Debug.Log(uvArray.Length);
+                    Debug.Log("triangleArray length");
+                    Debug.Log(triangleArray.Length);
+                    Debug.Log("positionArray[vertexCount - 1]");
+                    Debug.Log(positionArray[vertexCount - 1]);
+                    Debug.Log("uvArray[vertexCount - 1]");
+                    Debug.Log(uvArray[vertexCount - 1]);
+                    Debug.Log("triangleArray[triangleCount - 1]");
+                    Debug.Log(triangleArray[triangleCount - 1]);
+
+                    _verticesBuffer.SetData(positionArray, 0, vertexOffset, vertexCount);
+                    _uvBuffer.SetData(uvArray, 0, vertexOffset, vertexCount);
+                    _trianglesBuffer.SetData(triangleArray, 0, triangleOffset, triangleCount);
+                }
             }
 
-            int[] result = new int[2];
+            int[] result = new int[3];
             result[0] = vertexCount;
             result[1] = triangleCount;
+            result[2] = uvCount;
             return result;
         }
     }
