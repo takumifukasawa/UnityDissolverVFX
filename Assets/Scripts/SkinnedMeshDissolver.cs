@@ -8,8 +8,8 @@ using System.Linq;
 
 public class SkinnedMeshDissolver : MonoBehaviour
 {
-    [SerializeField]
-    private SkinnedMeshRenderer _targetMeshRenderer;
+    // [SerializeField]
+    // private SkinnedMeshRenderer _targetMeshRenderer;
 
     [SerializeField]
     private SkinnedMeshRenderer[] _targetSkinnedMeshRenderers = null;
@@ -82,9 +82,9 @@ public class SkinnedMeshDissolver : MonoBehaviour
     private MaterialPropertyBlock[] _dissolveMaterialPropertyBlocks = null;
 
     // for debug
-    // private MaterialPropertyBlock _debugPositionMapMaterialPropertyBlock;
-    // private MaterialPropertyBlock _debugNormalMapMaterialPropertyBlock;
-    // private MaterialPropertyBlock _debugAlphaMapMaterialPropertyBlock;
+    private MaterialPropertyBlock _debugPositionMapMaterialPropertyBlock;
+    private MaterialPropertyBlock _debugNormalMapMaterialPropertyBlock;
+    private MaterialPropertyBlock _debugAlphaMapMaterialPropertyBlock;
 
     // private Mesh _tmpMesh;
 
@@ -131,6 +131,14 @@ public class SkinnedMeshDissolver : MonoBehaviour
         {
             combineInstanceArray[i].mesh = _targetSkinnedMeshRenderers[i].sharedMesh;
             combineInstanceArray[i].transform = _targetSkinnedMeshRenderers[i].transform.localToWorldMatrix;
+            Debug.Log("### mesh info ###");
+            Debug.Log(i);
+            Debug.Log("triangles");
+            Debug.Log(_targetSkinnedMeshRenderers[i].sharedMesh.GetTriangles(0).Length);
+            Debug.Log("vertices");
+            Debug.Log(_targetSkinnedMeshRenderers[i].sharedMesh.vertices.Length);
+            // Debug.Log("uvs");
+            // Debug.Log(_targetSkinnedMeshRenderers[i].sharedMesh.GetUVs(0));
         }
         combinedMesh.CombineMeshes(combineInstanceArray);
 
@@ -145,6 +153,14 @@ public class SkinnedMeshDissolver : MonoBehaviour
         // Vector2[] uv = _targetMeshRenderer.sharedMesh.uv;
         Vector2[] uv = combinedMesh.uv;
         _uvBuffer = new ComputeBuffer(uv.Length, sizeof(float) * 2);
+
+        Debug.Log("==========");
+        Debug.Log("vertices");
+        Debug.Log(vertices.Length);
+        Debug.Log("uv count");
+        Debug.Log(uv.Length);
+        Debug.Log("triangles");
+        Debug.Log(triangles.Length / 3);
 
         // init compute shader
 
@@ -173,19 +189,40 @@ public class SkinnedMeshDissolver : MonoBehaviour
 
         // for debug
 
-        // _debugPositionMapMaterialPropertyBlock = new MaterialPropertyBlock();
-        // _debugNormalMapMaterialPropertyBlock = new MaterialPropertyBlock();
-        // _debugAlphaMapMaterialPropertyBlock = new MaterialPropertyBlock();
+        _debugPositionMapMaterialPropertyBlock = new MaterialPropertyBlock();
+        _debugNormalMapMaterialPropertyBlock = new MaterialPropertyBlock();
+        _debugAlphaMapMaterialPropertyBlock = new MaterialPropertyBlock();
+
+        // for debug 2
+
+        int vertexOffset = 0;
+        int triangleOffset = 0;
+        foreach (SkinnedMeshRenderer skinnedMeshRenderer in _targetSkinnedMeshRenderers)
+        {
+            int[] result = Bake(skinnedMeshRenderer, vertexOffset, triangleOffset);
+            vertexOffset += result[0];
+            triangleOffset += result[1];
+        }
     }
 
     int[] Bake(SkinnedMeshRenderer skinnedMeshRenderer, int vertexOffset, int triangleOffset)
     {
         skinnedMeshRenderer.BakeMesh(_targetMesh);
+
         using (Mesh.MeshDataArray dataArray = Mesh.AcquireReadOnlyMeshData(_targetMesh))
         {
             Mesh.MeshData data = dataArray[0];
             int vertexCount = data.vertexCount;
+
+            // Debug.Log("-----------------------------------------------------------");
+            // Debug.Log(_targetMesh.vertexCount);
+            // Debug.Log(data.vertexCount);
+
             int triangleCount = _targetMesh.triangles.Length;
+
+            // int triangleCount = _targetMesh.GetIndexCount(0);
+            // Debug.Log("==========");
+
             using (NativeArray<Vector3> positionArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
             // using(NativeArray<Vector3> normalArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
             using (NativeArray<Vector2> uvArray = new NativeArray<Vector2>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
@@ -195,6 +232,24 @@ public class SkinnedMeshDissolver : MonoBehaviour
                 // data.GetNormals(normalArray);
                 data.GetUVs(0, uvArray);
                 data.GetIndices(triangleArray, 0);
+
+                Debug.Log("----------------------------------------------------");
+                Debug.Log("vertex count");
+                Debug.Log(vertexCount);
+                Debug.Log("triangle count");
+                Debug.Log(triangleCount);
+                Debug.Log("positionArray length");
+                Debug.Log(positionArray.Length);
+                Debug.Log("uvArray length");
+                Debug.Log(uvArray.Length);
+                Debug.Log("triangleArray length");
+                Debug.Log(triangleArray.Length);
+                Debug.Log("positionArray[vertexCount - 1]");
+                Debug.Log(positionArray[vertexCount - 1]);
+                Debug.Log("uvArray[vertexCount - 1]");
+                Debug.Log(uvArray[vertexCount - 1]);
+                Debug.Log("triangleArray[triangleCount - 1]");
+                Debug.Log(triangleArray[triangleCount - 1]);
 
                 _verticesBuffer.SetData(positionArray, 0, vertexOffset, vertexCount);
                 _uvBuffer.SetData(uvArray, 0, vertexOffset, vertexCount);
@@ -208,37 +263,39 @@ public class SkinnedMeshDissolver : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        // _targetMeshRenderer.BakeMesh(_targetMesh);
+    // // Update is called once per frame
+    // void Update()
+    // {
+    //     // Debug.Log("################");
 
-        int vertexOffset = 0;
-        int triangleOffset = 0;
-        foreach (SkinnedMeshRenderer skinnedMeshRenderer in _targetSkinnedMeshRenderers)
-        {
-            int[] result = Bake(skinnedMeshRenderer, vertexOffset, triangleOffset);
-            vertexOffset += result[0];
-            triangleOffset += result[1];
-        }
+    //     // _targetMeshRenderer.BakeMesh(_targetMesh);
 
-        UpdateVFX();
-        UpdateMaterials();
+    //     int vertexOffset = 0;
+    //     int triangleOffset = 0;
+    //     foreach (SkinnedMeshRenderer skinnedMeshRenderer in _targetSkinnedMeshRenderers)
+    //     {
+    //         int[] result = Bake(skinnedMeshRenderer, vertexOffset, triangleOffset);
+    //         vertexOffset += result[0];
+    //         triangleOffset += result[1];
+    //     }
 
-        // for debug
+    //     UpdateVFX();
+    //     UpdateMaterials();
 
-        // _debugPositionMapMeshRenderer.GetPropertyBlock(_debugPositionMapMaterialPropertyBlock);
-        // _debugPositionMapMaterialPropertyBlock.SetTexture("_BaseMap", _positionMap);
-        // _debugPositionMapMeshRenderer.SetPropertyBlock(_debugPositionMapMaterialPropertyBlock);
+    //     // for debug
 
-        // _debugNormalMapMeshRenderer.GetPropertyBlock(_debugNormalMapMaterialPropertyBlock);
-        // _debugNormalMapMaterialPropertyBlock.SetTexture("_BaseMap", _normalMap);
-        // _debugNormalMapMeshRenderer.SetPropertyBlock(_debugNormalMapMaterialPropertyBlock);
+    //     _debugPositionMapMeshRenderer.GetPropertyBlock(_debugPositionMapMaterialPropertyBlock);
+    //     _debugPositionMapMaterialPropertyBlock.SetTexture("_BaseMap", _positionMap);
+    //     _debugPositionMapMeshRenderer.SetPropertyBlock(_debugPositionMapMaterialPropertyBlock);
 
-        // _debugAlphaMapMeshRenderer.GetPropertyBlock(_debugAlphaMapMaterialPropertyBlock);
-        // _debugAlphaMapMaterialPropertyBlock.SetTexture("_BaseMap", _alphaMap);
-        // _debugAlphaMapMeshRenderer.SetPropertyBlock(_debugAlphaMapMaterialPropertyBlock);
-    }
+    //     _debugNormalMapMeshRenderer.GetPropertyBlock(_debugNormalMapMaterialPropertyBlock);
+    //     _debugNormalMapMaterialPropertyBlock.SetTexture("_BaseMap", _normalMap);
+    //     _debugNormalMapMeshRenderer.SetPropertyBlock(_debugNormalMapMaterialPropertyBlock);
+
+    //     _debugAlphaMapMeshRenderer.GetPropertyBlock(_debugAlphaMapMaterialPropertyBlock);
+    //     _debugAlphaMapMaterialPropertyBlock.SetTexture("_BaseMap", _alphaMap);
+    //     _debugAlphaMapMeshRenderer.SetPropertyBlock(_debugAlphaMapMaterialPropertyBlock);
+    // }
 
     void UpdateVFX()
     {

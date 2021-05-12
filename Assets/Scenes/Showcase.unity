@@ -2527,7 +2527,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f78de0a1d6bb191478ceb19a81501f59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _targetMeshRenderer: {fileID: 1243566506}
   _targetSkinnedMeshRenderers:
   - {fileID: 1243566506}
   - {fileID: 350402301}
@@ -2540,8 +2539,8 @@ MonoBehaviour:
   _edgeFadeOut: 0.52
   _timeMultiplier: 1
   _visualEffect: {fileID: 1202582221}
-  _destMapWidth: 64
-  _destMapHeight: 64
+  _destMapWidth: 256
+  _destMapHeight: 256
   _dissolveThreshold: 0.5
   _debugPositionMapMeshRenderer: {fileID: 885898542}
   _debugNormalMapMeshRenderer: {fileID: 1013530977}
@@ -2794,7 +2793,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2097973730}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.67, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2048063970}

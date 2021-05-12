@@ -74,6 +74,10 @@ void CSMain (uint2 id : SV_DispatchThreadID)
     );
     float weight3 = 1 - (weight1 + weight2);
 
+    // float weight1 = 0.333;
+    // float weight2 = 0.333;
+    // float weight3 = 0.333;
+
     float2 uv =
         uv1 * weight1 +
         uv2 * weight2 +
@@ -95,7 +99,7 @@ void CSMain (uint2 id : SV_DispatchThreadID)
     // float3 wn = CalcNormal(wp1 * weight1, wp2 * weight2, wp3 * weight3);
 
     // fake normal
-    float3 wn = CalcNormal(wp1, wp2, wp3);
+    float3 wn = CalcNormal(wp1.xyz, wp2.xyz, wp3.xyz);
     wn = (wn * 0.5) + 0.5; // -1 ~ 1 => 0 ~ 1
 
     float4 dissolveMapValue = DissolveMap[uint2(
@@ -121,6 +125,8 @@ void CSMain (uint2 id : SV_DispatchThreadID)
     PositionMap[id] = float4(wp.x, wp.y, wp.z, 1);
 
     NormalMap[id] = float4(wn.x, wn.y, wn.z, 1);
+    // NormalMap[id] = float4(1, 1, 1, 1);
 
     AlphaMap[id] = float4(alpha, alpha, alpha, alpha);
+    // AlphaMap[id] = float4(1, 1, 1, 1);
 }
