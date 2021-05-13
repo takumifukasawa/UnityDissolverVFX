@@ -125,8 +125,6 @@ void CSMain (uint2 id : SV_DispatchThreadID)
     PositionMap[id] = float4(wp.x, wp.y, wp.z, 1);
 
     NormalMap[id] = float4(wn.x, wn.y, wn.z, 1);
-    // NormalMap[id] = float4(1, 1, 1, 1);
 
     AlphaMap[id] = float4(alpha, alpha, alpha, alpha);
-    // AlphaMap[id] = float4(1, 1, 1, 1);
 }

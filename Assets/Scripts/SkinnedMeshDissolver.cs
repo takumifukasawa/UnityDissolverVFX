@@ -193,18 +193,13 @@ public class SkinnedMeshDissolver : MonoBehaviour
         _debugNormalMapMaterialPropertyBlock = new MaterialPropertyBlock();
         _debugAlphaMapMaterialPropertyBlock = new MaterialPropertyBlock();
 
-        // for debug 2
+        ExecCompute();
+    }
 
-        int vertexOffset = 0;
-        int triangleOffset = 0;
-        int uvOffset = 0;
-        foreach (SkinnedMeshRenderer skinnedMeshRenderer in _targetSkinnedMeshRenderers)
-        {
-            int[] result = Bake(skinnedMeshRenderer, vertexOffset, triangleOffset, uvOffset);
-            vertexOffset += result[0];
-            triangleOffset += result[1];
-            uvOffset += result[2];
-        }
+    // Update is called once per frame
+    void Update()
+    {
+        ExecCompute();
     }
 
     int[] Bake(SkinnedMeshRenderer skinnedMeshRenderer, int vertexOffset, int triangleOffset, int uvOffset)
@@ -215,56 +210,43 @@ public class SkinnedMeshDissolver : MonoBehaviour
         {
             Mesh.MeshData data = dataArray[0];
             int vertexCount = data.vertexCount;
-
-            // Debug.Log("-----------------------------------------------------------");
-            // Debug.Log(_targetMesh.vertexCount);
-            // Debug.Log(data.vertexCount);
-
+            // Debug.Log("using vertex count");
+            // Debug.Log(vertexCount);
             int triangleCount = _targetMesh.triangles.Length;
+            // NOTE: equal vertex count
+            int uvCount = vertexCount;
 
-            // initial
-            int uvCount = 0;
-
-            // int triangleCount = _targetMesh.GetIndexCount(0);
-            // Debug.Log("==========");
-
-            using (NativeArray<Vector2> uvs = new NativeArray<Vector2>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+            using (NativeArray<Vector3> positionArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+            // using(NativeArray<Vector3> normalArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+            using (NativeArray<ushort> triangleArray = new NativeArray<ushort>(triangleCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+            using (NativeArray<Vector2> uvArray = new NativeArray<Vector2>(uvCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
             {
-                data.GetUVs(0, uvs);
-                uvCount = uvs.Length;
+                data.GetVertices(positionArray);
+                // data.GetNormals(normalArray);
+                data.GetIndices(triangleArray, 0);
+                data.GetUVs(0, uvArray);
+            
+                // Debug.Log("----------------------------------------------------");
+                // Debug.Log("vertex count");
+                // Debug.Log(vertexCount);
+                // Debug.Log("triangle count");
+                // Debug.Log(triangleCount);
+                // Debug.Log("positionArray length");
+                // Debug.Log(positionArray.Length);
+                // Debug.Log("uvArray length");
+                // Debug.Log(uvArray.Length);
+                // Debug.Log("triangleArray length");
+                // Debug.Log(triangleArray.Length);
+                // Debug.Log("positionArray[vertexCount - 1]");
+                // Debug.Log(positionArray[vertexCount - 1]);
+                // Debug.Log("uvArray[vertexCount - 1]");
+                // Debug.Log(uvArray[vertexCount - 1]);
+                // Debug.Log("triangleArray[triangleCount - 1]");
+                // Debug.Log(triangleArray[triangleCount - 1]);
 
-                using (NativeArray<Vector3> positionArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
-                // using(NativeArray<Vector3> normalArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
-                using (NativeArray<Vector2> uvArray = new NativeArray<Vector2>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
-                using (NativeArray<ushort> triangleArray = new NativeArray<ushort>(triangleCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
-                {
-                    data.GetVertices(positionArray);
-                    // data.GetNormals(normalArray);
-                    data.GetUVs(0, uvArray);
-                    data.GetIndices(triangleArray, 0);
-
-                    Debug.Log("----------------------------------------------------");
-                    Debug.Log("vertex count");
-                    Debug.Log(vertexCount);
-                    Debug.Log("triangle count");
-                    Debug.Log(triangleCount);
-                    Debug.Log("positionArray length");
-                    Debug.Log(positionArray.Length);
-                    Debug.Log("uvArray length");
-                    Debug.Log(uvArray.Length);
-                    Debug.Log("triangleArray length");
-                    Debug.Log(triangleArray.Length);
-                    Debug.Log("positionArray[vertexCount - 1]");
-                    Debug.Log(positionArray[vertexCount - 1]);
-                    Debug.Log("uvArray[vertexCount - 1]");
-                    Debug.Log(uvArray[vertexCount - 1]);
-                    Debug.Log("triangleArray[triangleCount - 1]");
-                    Debug.Log(triangleArray[triangleCount - 1]);
-
-                    _verticesBuffer.SetData(positionArray, 0, vertexOffset, vertexCount);
-                    _uvBuffer.SetData(uvArray, 0, vertexOffset, vertexCount);
-                    _trianglesBuffer.SetData(triangleArray, 0, triangleOffset, triangleCount);
-                }
+                _verticesBuffer.SetData(positionArray, 0, vertexOffset, vertexCount);
+                _trianglesBuffer.SetData(triangleArray, 0, triangleOffset, triangleCount);
+                _uvBuffer.SetData(uvArray, 0, uvOffset, uvCount);
             }
 
             int[] result = new int[3];
@@ -275,39 +257,36 @@ public class SkinnedMeshDissolver : MonoBehaviour
         }
     }
 
-    // // Update is called once per frame
-    // void Update()
-    // {
-    //     // Debug.Log("################");
+    void ExecCompute() {
+        int vertexOffset = 0;
+        int triangleOffset = 0;
+        int uvOffset = 0;
 
-    //     // _targetMeshRenderer.BakeMesh(_targetMesh);
+        foreach (SkinnedMeshRenderer skinnedMeshRenderer in _targetSkinnedMeshRenderers)
+        {
+            int[] result = Bake(skinnedMeshRenderer, vertexOffset, triangleOffset, uvOffset);
+            vertexOffset += result[0];
+            triangleOffset += result[1];
+            uvOffset += result[2];
+        }
 
-    //     int vertexOffset = 0;
-    //     int triangleOffset = 0;
-    //     foreach (SkinnedMeshRenderer skinnedMeshRenderer in _targetSkinnedMeshRenderers)
-    //     {
-    //         int[] result = Bake(skinnedMeshRenderer, vertexOffset, triangleOffset);
-    //         vertexOffset += result[0];
-    //         triangleOffset += result[1];
-    //     }
+        UpdateVFX();
+        UpdateMaterials();
 
-    //     UpdateVFX();
-    //     UpdateMaterials();
+        // for debug
 
-    //     // for debug
+        _debugPositionMapMeshRenderer.GetPropertyBlock(_debugPositionMapMaterialPropertyBlock);
+        _debugPositionMapMaterialPropertyBlock.SetTexture("_BaseMap", _positionMap);
+        _debugPositionMapMeshRenderer.SetPropertyBlock(_debugPositionMapMaterialPropertyBlock);
 
-    //     _debugPositionMapMeshRenderer.GetPropertyBlock(_debugPositionMapMaterialPropertyBlock);
-    //     _debugPositionMapMaterialPropertyBlock.SetTexture("_BaseMap", _positionMap);
-    //     _debugPositionMapMeshRenderer.SetPropertyBlock(_debugPositionMapMaterialPropertyBlock);
+        _debugNormalMapMeshRenderer.GetPropertyBlock(_debugNormalMapMaterialPropertyBlock);
+        _debugNormalMapMaterialPropertyBlock.SetTexture("_BaseMap", _normalMap);
+        _debugNormalMapMeshRenderer.SetPropertyBlock(_debugNormalMapMaterialPropertyBlock);
 
-    //     _debugNormalMapMeshRenderer.GetPropertyBlock(_debugNormalMapMaterialPropertyBlock);
-    //     _debugNormalMapMaterialPropertyBlock.SetTexture("_BaseMap", _normalMap);
-    //     _debugNormalMapMeshRenderer.SetPropertyBlock(_debugNormalMapMaterialPropertyBlock);
-
-    //     _debugAlphaMapMeshRenderer.GetPropertyBlock(_debugAlphaMapMaterialPropertyBlock);
-    //     _debugAlphaMapMaterialPropertyBlock.SetTexture("_BaseMap", _alphaMap);
-    //     _debugAlphaMapMeshRenderer.SetPropertyBlock(_debugAlphaMapMaterialPropertyBlock);
-    // }
+        _debugAlphaMapMeshRenderer.GetPropertyBlock(_debugAlphaMapMaterialPropertyBlock);
+        _debugAlphaMapMaterialPropertyBlock.SetTexture("_BaseMap", _alphaMap);
+        _debugAlphaMapMeshRenderer.SetPropertyBlock(_debugAlphaMapMaterialPropertyBlock);
+    }
 
     void UpdateVFX()
     {
@@ -331,8 +310,6 @@ public class SkinnedMeshDissolver : MonoBehaviour
         _visualEffect.SetTexture("PositionMap", _positionMap);
         _visualEffect.SetTexture("NormalMap", _normalMap);
         _visualEffect.SetTexture("AlphaMap", _alphaMap);
-
-
     }
 
     void UpdateMaterials()
