@@ -133,7 +133,7 @@ public class SkinnedMeshDissolver : MonoBehaviour
             combineInstanceArray[i].transform = _targetSkinnedMeshRenderers[i].transform.localToWorldMatrix;
             Debug.Log("### mesh info ###");
             Debug.Log(i);
-            Debug.Log("triangles");
+            Debug.Log("indices");
             Debug.Log(_targetSkinnedMeshRenderers[i].sharedMesh.GetTriangles(0).Length);
             Debug.Log("vertices");
             Debug.Log(_targetSkinnedMeshRenderers[i].sharedMesh.vertices.Length);
@@ -142,25 +142,43 @@ public class SkinnedMeshDissolver : MonoBehaviour
         }
         combinedMesh.CombineMeshes(combineInstanceArray);
 
-        // int[] triangles = _targetMeshRenderer.sharedMesh.GetTriangles(0);
-        int[] triangles = combinedMesh.triangles;
+        // for looper
+
+        // // int[] triangles = _targetMeshRenderer.sharedMesh.GetTriangles(0);
+        // int[] triangles = combinedMesh.triangles;
+        // _trianglesBuffer = new ComputeBuffer(triangles.Length, sizeof(int));
+
+        // // Vector3[] vertices = _targetMeshRenderer.sharedMesh.vertices;
+        // Vector3[] vertices = combinedMesh.vertices;
+        // _verticesBuffer = new ComputeBuffer(vertices.Length, sizeof(float) * 3);
+
+        // // Vector2[] uv = _targetMeshRenderer.sharedMesh.uv;
+        // Vector2[] uv = combinedMesh.uv;
+        // _uvBuffer = new ComputeBuffer(uv.Length, sizeof(float) * 2);
+
+        // Debug.Log("==========");
+        // Debug.Log("vertices");
+        // Debug.Log(vertices.Length);
+        // Debug.Log("uv count");
+        // Debug.Log(uv.Length);
+        // Debug.Log("triangles");
+        // Debug.Log(triangles.Length / 3);
+
+        // for debug
+
+        _targetMesh = _targetSkinnedMeshRenderers[0].sharedMesh;
+
+        int[] triangles = _targetMesh.GetTriangles(0);
         _trianglesBuffer = new ComputeBuffer(triangles.Length, sizeof(int));
+        _trianglesBuffer.SetData(triangles);
 
-        // Vector3[] vertices = _targetMeshRenderer.sharedMesh.vertices;
-        Vector3[] vertices = combinedMesh.vertices;
+        Vector3[] vertices = _targetMesh.vertices;
         _verticesBuffer = new ComputeBuffer(vertices.Length, sizeof(float) * 3);
+        _verticesBuffer.SetData(vertices);
 
-        // Vector2[] uv = _targetMeshRenderer.sharedMesh.uv;
-        Vector2[] uv = combinedMesh.uv;
+        Vector2[] uv = _targetMesh.uv;
         _uvBuffer = new ComputeBuffer(uv.Length, sizeof(float) * 2);
-
-        Debug.Log("==========");
-        Debug.Log("vertices");
-        Debug.Log(vertices.Length);
-        Debug.Log("uv count");
-        Debug.Log(uv.Length);
-        Debug.Log("triangles");
-        Debug.Log(triangles.Length / 3);
+        _uvBuffer.SetData(uv);
 
         // init compute shader
 
@@ -227,6 +245,9 @@ public class SkinnedMeshDissolver : MonoBehaviour
                 data.GetUVs(0, uvArray);
             
                 // Debug.Log("----------------------------------------------------");
+                // for(int i = 0; i < positionArray.Length; i++) {
+                //     Debug.Log(positionArray[i]);
+                // }
                 // Debug.Log("vertex count");
                 // Debug.Log(vertexCount);
                 // Debug.Log("triangle count");
@@ -258,17 +279,17 @@ public class SkinnedMeshDissolver : MonoBehaviour
     }
 
     void ExecCompute() {
-        int vertexOffset = 0;
-        int triangleOffset = 0;
-        int uvOffset = 0;
+        // int vertexOffset = 0;
+        // int triangleOffset = 0;
+        // int uvOffset = 0;
 
-        foreach (SkinnedMeshRenderer skinnedMeshRenderer in _targetSkinnedMeshRenderers)
-        {
-            int[] result = Bake(skinnedMeshRenderer, vertexOffset, triangleOffset, uvOffset);
-            vertexOffset += result[0];
-            triangleOffset += result[1];
-            uvOffset += result[2];
-        }
+        // foreach (SkinnedMeshRenderer skinnedMeshRenderer in _targetSkinnedMeshRenderers)
+        // {
+        //     int[] result = Bake(skinnedMeshRenderer, vertexOffset, triangleOffset, uvOffset);
+        //     vertexOffset += result[0];
+        //     triangleOffset += result[1];
+        //     uvOffset += result[2];
+        // }
 
         UpdateVFX();
         UpdateMaterials();
@@ -296,7 +317,10 @@ public class SkinnedMeshDissolver : MonoBehaviour
         _computeShader.SetFloat("EdgeIn", _edgeIn);
         _computeShader.SetFloat("EdgeOut", _edgeOut);
         _computeShader.SetFloat("EdgeFadeOut", _edgeFadeOut);
+
+        // TODO: ここがおかしいかもしれない
         _computeShader.SetMatrix("Transform", transform.localToWorldMatrix);
+
         _computeShader.SetFloat("DissolveThreshold", _dissolveThreshold);
         _computeShader.SetFloat("Time", Mathf.Repeat(Time.time * _timeMultiplier, 100f)); // multiply speed and clamp time
 
