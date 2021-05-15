@@ -6,7 +6,7 @@ using Unity.Mathematics;
 using UnityEngine.VFX;
 using System.Linq;
 
-public class Dissolver : MonoBehaviour
+public class MeshDissolver : MonoBehaviour
 {
     // [SerializeField]
     // private SkinnedMeshRenderer _targetMeshRenderer;
