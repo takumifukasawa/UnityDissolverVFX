@@ -142,7 +142,7 @@ public class SkinnedMeshDissolver : MonoBehaviour
         }
         combinedMesh.CombineMeshes(combineInstanceArray);
 
-        // for looper
+        // // for looper
 
         // int[] triangles = _targetMeshRenderer.sharedMesh.GetTriangles(0);
         int[] triangles = combinedMesh.triangles;
@@ -156,13 +156,13 @@ public class SkinnedMeshDissolver : MonoBehaviour
         Vector2[] uv = combinedMesh.uv;
         _uvBuffer = new ComputeBuffer(uv.Length, sizeof(float) * 2);
 
-        // Debug.Log("==========");
-        // Debug.Log("vertices");
-        // Debug.Log(vertices.Length);
-        // Debug.Log("uv count");
-        // Debug.Log(uv.Length);
-        // Debug.Log("triangles");
-        // Debug.Log(triangles.Length / 3);
+        Debug.Log("==========");
+        Debug.Log("vertices");
+        Debug.Log(vertices.Length);
+        Debug.Log("uv count");
+        Debug.Log(uv.Length);
+        Debug.Log("triangles");
+        Debug.Log(triangles.Length / 3);
 
         // // for debug
 
@@ -173,7 +173,6 @@ public class SkinnedMeshDissolver : MonoBehaviour
         // testCombinedMesh[0].transform = _targetSkinnedMeshRenderers[0].transform.localToWorldMatrix;
 
         // _computeShader.SetMatrix("Transform", testCombinedMesh[0].transform);
-
 
         // int[] triangles = testMesh.GetTriangles(0);
         // _trianglesBuffer = new ComputeBuffer(triangles.Length, sizeof(int));
@@ -197,32 +196,16 @@ public class SkinnedMeshDissolver : MonoBehaviour
         //     // NOTE: equal vertex count
         //     int uvCount = vertexCount;
 
-        //      using (NativeArray<Vector3> positionArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
-        //      // using(NativeArray<Vector3> normalArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
-        //      using (NativeArray<int> triangleArray = new NativeArray<int>(triangleCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
-        //      using (NativeArray<Vector2> uvArray = new NativeArray<Vector2>(uvCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
-        //      {
-        //          data.GetVertices(positionArray);
-        //          // data.GetNormals(normalArray);
-        //          data.GetIndices(triangleArray, 0);
-        //          data.GetUVs(0, uvArray);
+        //     using (NativeArray<Vector3> positionArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+        //     // using(NativeArray<Vector3> normalArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+        //     using (NativeArray<int> triangleArray = new NativeArray<int>(triangleCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+        //     using (NativeArray<Vector2> uvArray = new NativeArray<Vector2>(uvCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+        //     {
+        //         data.GetVertices(positionArray);
+        //         // data.GetNormals(normalArray);
+        //         data.GetIndices(triangleArray, 0);
+        //         data.GetUVs(0, uvArray);
 
-        //         Debug.Log("--- vertices length ---");
-        //         Debug.Log(vertices.Length);
-        //         Debug.Log("--- vertices ---");
-        //         for(int i = 0; i < vertices.Length; i++) {
-        //             // if(i > 50) break;
-        //             Debug.Log(vertices[i]);
-        //         }
-        //         Debug.Log("--- position length ---");
-        //         Debug.Log(positionArray.Length);
-        //         Debug.Log("--- positions ---");
-        //         for(int i = 0; i < positionArray.Length; i++) {
-        //             // if(i > 50) break;
-        //             Debug.Log(positionArray[i]);
-        //         }
-
- 
         //         // _verticesBuffer.SetData(positionArray, 0, 0, vertexCount);
         //         // _trianglesBuffer.SetData(triangleArray, 0, 0, triangleCount);
         //         // _uvBuffer.SetData(uvArray, 0, 0, uvCount);
@@ -419,7 +402,7 @@ public class SkinnedMeshDissolver : MonoBehaviour
         _computeShader.SetFloat("EdgeFadeOut", _edgeFadeOut);
 
         // TODO: ここがおかしいかもしれない
-        // _computeShader.SetMatrix("Transform", transform.localToWorldMatrix);
+        _computeShader.SetMatrix("Transform", transform.localToWorldMatrix);
 
         _computeShader.SetFloat("DissolveThreshold", _dissolveThreshold);
         _computeShader.SetFloat("Time", Mathf.Repeat(Time.time * _timeMultiplier, 100f)); // multiply speed and clamp time
