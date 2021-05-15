@@ -74,9 +74,10 @@ void CSMain (uint2 id : SV_DispatchThreadID)
     );
     float weight3 = 1 - (weight1 + weight2);
 
-    // float weight1 = 0.333;
-    // float weight2 = 0.333;
-    // float weight3 = 0.333;
+    // for debug
+    // weight1 = 0.333;
+    // weight2 = 0.333;
+    // weight3 = 0.333;
 
     float2 uv =
         uv1 * weight1 +
@@ -101,6 +102,8 @@ void CSMain (uint2 id : SV_DispatchThreadID)
     // fake normal
     float3 wn = CalcNormal(wp1.xyz, wp2.xyz, wp3.xyz);
     wn = (wn * 0.5) + 0.5; // -1 ~ 1 => 0 ~ 1
+    // for debug
+    // wn += float3(4000, 4000, 4000);
 
     float4 dissolveMapValue = DissolveMap[uint2(
         (uint)(uv.x * DissolveMapWidth),
@@ -123,8 +126,29 @@ void CSMain (uint2 id : SV_DispatchThreadID)
     // -----------------------------------------------------------------------
 
     PositionMap[id] = float4(wp.x, wp.y, wp.z, 1);
+    // for debug
+    // PositionMap[id] = float4(lp1.x, lp1.y, lp1.z, 1);
 
     NormalMap[id] = float4(wn.x, wn.y, wn.z, 1);
+    // for debug
+    // NormalMap[id] = float4(wp1.x, wp1.y, wp1.z, 1);
+    // NormalMap[id] = float4(wp2.x, wp2.y, wp2.z, 1);
+    // NormalMap[id] = float4(wp3.x, wp3.y, wp3.z, 1);
+    // NormalMap[id] = float4(weight1, weight2, weight3, 1);
+    // NormalMap[id] = float4(lp1.x, lp1.y, lp1.z, 1);
+    // NormalMap[id] = float4(1, 1, 1, 1);
 
     AlphaMap[id] = float4(alpha, alpha, alpha, alpha);
+    // AlphaMap[id] = float4(1, 1, 1, 1);
+    // for debug
+    // AlphaMap[id] = float4(o.DissolveEdge, o.DissolveEdge, o.DissolveEdge, o.DissolveEdge);
+
+    // for debug
+    // PositionMap[id] = float4(v1.x, v1.y, v1.z, 1);
+    // NormalMap[id] = float4(v2.x, v2.y, v2.z, 1);
+    // AlphaMap[id] = float4(v3.x, v3.y, v3.z, 1);
+    // NormalMap[id] = float4(wp1.x + wp2.x, wp1.y + wp2.y + wp3.z, wp1.z + wp2.z, 1);
+    // NormalMap[id] = float4(clamp(wn.x, 0, 1) + 1, clamp(wn.y, 0, 1), clamp(wn.z, 0, 1), 1);
+
+    // PositionMap[id] = float4((float)targetIndex / (float)TrianglesCount, 1, 1, 1);
 }

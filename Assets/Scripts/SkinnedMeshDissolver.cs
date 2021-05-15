@@ -144,17 +144,17 @@ public class SkinnedMeshDissolver : MonoBehaviour
 
         // for looper
 
-        // // int[] triangles = _targetMeshRenderer.sharedMesh.GetTriangles(0);
-        // int[] triangles = combinedMesh.triangles;
-        // _trianglesBuffer = new ComputeBuffer(triangles.Length, sizeof(int));
+        // int[] triangles = _targetMeshRenderer.sharedMesh.GetTriangles(0);
+        int[] triangles = combinedMesh.triangles;
+        _trianglesBuffer = new ComputeBuffer(triangles.Length, sizeof(int));
 
-        // // Vector3[] vertices = _targetMeshRenderer.sharedMesh.vertices;
-        // Vector3[] vertices = combinedMesh.vertices;
-        // _verticesBuffer = new ComputeBuffer(vertices.Length, sizeof(float) * 3);
+        // Vector3[] vertices = _targetMeshRenderer.sharedMesh.vertices;
+        Vector3[] vertices = combinedMesh.vertices;
+        _verticesBuffer = new ComputeBuffer(vertices.Length, sizeof(float) * 3);
 
-        // // Vector2[] uv = _targetMeshRenderer.sharedMesh.uv;
-        // Vector2[] uv = combinedMesh.uv;
-        // _uvBuffer = new ComputeBuffer(uv.Length, sizeof(float) * 2);
+        // Vector2[] uv = _targetMeshRenderer.sharedMesh.uv;
+        Vector2[] uv = combinedMesh.uv;
+        _uvBuffer = new ComputeBuffer(uv.Length, sizeof(float) * 2);
 
         // Debug.Log("==========");
         // Debug.Log("vertices");
@@ -164,73 +164,73 @@ public class SkinnedMeshDissolver : MonoBehaviour
         // Debug.Log("triangles");
         // Debug.Log(triangles.Length / 3);
 
-        // for debug
+        // // for debug
 
-        Mesh testMesh = _targetSkinnedMeshRenderers[0].sharedMesh;
+        // Mesh testMesh = _targetSkinnedMeshRenderers[0].sharedMesh;
 
-        CombineInstance[] testCombinedMesh = new CombineInstance[1];
-        testCombinedMesh[0].mesh = _targetSkinnedMeshRenderers[0].sharedMesh;
-        testCombinedMesh[0].transform = _targetSkinnedMeshRenderers[0].transform.localToWorldMatrix;
+        // CombineInstance[] testCombinedMesh = new CombineInstance[1];
+        // testCombinedMesh[0].mesh = _targetSkinnedMeshRenderers[0].sharedMesh;
+        // testCombinedMesh[0].transform = _targetSkinnedMeshRenderers[0].transform.localToWorldMatrix;
 
-        _computeShader.SetMatrix("Transform", testCombinedMesh[0].transform);
+        // _computeShader.SetMatrix("Transform", testCombinedMesh[0].transform);
 
 
-        int[] triangles = testMesh.GetTriangles(0);
-        _trianglesBuffer = new ComputeBuffer(triangles.Length, sizeof(int));
-        // _trianglesBuffer.SetData(triangles);
+        // int[] triangles = testMesh.GetTriangles(0);
+        // _trianglesBuffer = new ComputeBuffer(triangles.Length, sizeof(int));
+        // // _trianglesBuffer.SetData(triangles);
 
-        Vector3[] vertices = testMesh.vertices;
-        _verticesBuffer = new ComputeBuffer(vertices.Length, sizeof(float) * 3);
-        // _verticesBuffer.SetData(vertices);
+        // Vector3[] vertices = testMesh.vertices;
+        // _verticesBuffer = new ComputeBuffer(vertices.Length, sizeof(float) * 3);
+        // // _verticesBuffer.SetData(vertices);
 
-        Vector2[] uv = testMesh.uv;
-        _uvBuffer = new ComputeBuffer(uv.Length, sizeof(float) * 2);
-        // _uvBuffer.SetData(uv);
+        // Vector2[] uv = testMesh.uv;
+        // _uvBuffer = new ComputeBuffer(uv.Length, sizeof(float) * 2);
+        // // _uvBuffer.SetData(uv);
 
-        using (Mesh.MeshDataArray dataArray = Mesh.AcquireReadOnlyMeshData(testMesh))
-        {
-            Mesh.MeshData data = dataArray[0];
-            int vertexCount = data.vertexCount;
-            // Debug.Log("using vertex count");
-            // Debug.Log(vertexCount);
-            int triangleCount = testMesh.triangles.Length;
-            // NOTE: equal vertex count
-            int uvCount = vertexCount;
+        // using (Mesh.MeshDataArray dataArray = Mesh.AcquireReadOnlyMeshData(testMesh))
+        // {
+        //     Mesh.MeshData data = dataArray[0];
+        //     int vertexCount = data.vertexCount;
+        //     // Debug.Log("using vertex count");
+        //     // Debug.Log(vertexCount);
+        //     int triangleCount = testMesh.triangles.Length;
+        //     // NOTE: equal vertex count
+        //     int uvCount = vertexCount;
 
-             using (NativeArray<Vector3> positionArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
-             // using(NativeArray<Vector3> normalArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
-             using (NativeArray<int> triangleArray = new NativeArray<int>(triangleCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
-             using (NativeArray<Vector2> uvArray = new NativeArray<Vector2>(uvCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
-             {
-                 data.GetVertices(positionArray);
-                 // data.GetNormals(normalArray);
-                 data.GetIndices(triangleArray, 0);
-                 data.GetUVs(0, uvArray);
+        //      using (NativeArray<Vector3> positionArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+        //      // using(NativeArray<Vector3> normalArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+        //      using (NativeArray<int> triangleArray = new NativeArray<int>(triangleCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+        //      using (NativeArray<Vector2> uvArray = new NativeArray<Vector2>(uvCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+        //      {
+        //          data.GetVertices(positionArray);
+        //          // data.GetNormals(normalArray);
+        //          data.GetIndices(triangleArray, 0);
+        //          data.GetUVs(0, uvArray);
 
-                Debug.Log("--- vertices length ---");
-                Debug.Log(vertices.Length);
-                Debug.Log("--- vertices ---");
-                for(int i = 0; i < vertices.Length; i++) {
-                    // if(i > 50) break;
-                    Debug.Log(vertices[i]);
-                }
-                Debug.Log("--- position length ---");
-                Debug.Log(positionArray.Length);
-                Debug.Log("--- positions ---");
-                for(int i = 0; i < positionArray.Length; i++) {
-                    // if(i > 50) break;
-                    Debug.Log(positionArray[i]);
-                }
+        //         Debug.Log("--- vertices length ---");
+        //         Debug.Log(vertices.Length);
+        //         Debug.Log("--- vertices ---");
+        //         for(int i = 0; i < vertices.Length; i++) {
+        //             // if(i > 50) break;
+        //             Debug.Log(vertices[i]);
+        //         }
+        //         Debug.Log("--- position length ---");
+        //         Debug.Log(positionArray.Length);
+        //         Debug.Log("--- positions ---");
+        //         for(int i = 0; i < positionArray.Length; i++) {
+        //             // if(i > 50) break;
+        //             Debug.Log(positionArray[i]);
+        //         }
 
  
-                // _verticesBuffer.SetData(positionArray, 0, 0, vertexCount);
-                // _trianglesBuffer.SetData(triangleArray, 0, 0, triangleCount);
-                // _uvBuffer.SetData(uvArray, 0, 0, uvCount);
-                _verticesBuffer.SetData(positionArray);
-                _trianglesBuffer.SetData(triangleArray);
-                _uvBuffer.SetData(uvArray);
-             }
-        }
+        //         // _verticesBuffer.SetData(positionArray, 0, 0, vertexCount);
+        //         // _trianglesBuffer.SetData(triangleArray, 0, 0, triangleCount);
+        //         // _uvBuffer.SetData(uvArray, 0, 0, uvCount);
+        //         _verticesBuffer.SetData(positionArray);
+        //         _trianglesBuffer.SetData(triangleArray);
+        //         _uvBuffer.SetData(uvArray);
+        //      }
+        // }
 
         // using (Mesh.MeshDataArray dataArray = Mesh.AcquireReadOnlyMeshData(testMesh))
         // {
@@ -317,7 +317,7 @@ public class SkinnedMeshDissolver : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // ExecCompute();
+        ExecCompute();
     }
 
     int[] Bake(SkinnedMeshRenderer skinnedMeshRenderer, int vertexOffset, int triangleOffset, int uvOffset)
@@ -336,7 +336,7 @@ public class SkinnedMeshDissolver : MonoBehaviour
 
             using (NativeArray<Vector3> positionArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
             // using(NativeArray<Vector3> normalArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
-            using (NativeArray<ushort> triangleArray = new NativeArray<ushort>(triangleCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+            using (NativeArray<int> triangleArray = new NativeArray<int>(triangleCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
             using (NativeArray<Vector2> uvArray = new NativeArray<Vector2>(uvCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
             {
                 data.GetVertices(positionArray);
@@ -379,17 +379,17 @@ public class SkinnedMeshDissolver : MonoBehaviour
     }
 
     void ExecCompute() {
-        // int vertexOffset = 0;
-        // int triangleOffset = 0;
-        // int uvOffset = 0;
+        int vertexOffset = 0;
+        int triangleOffset = 0;
+        int uvOffset = 0;
 
-        // foreach (SkinnedMeshRenderer skinnedMeshRenderer in _targetSkinnedMeshRenderers)
-        // {
-        //     int[] result = Bake(skinnedMeshRenderer, vertexOffset, triangleOffset, uvOffset);
-        //     vertexOffset += result[0];
-        //     triangleOffset += result[1];
-        //     uvOffset += result[2];
-        // }
+        foreach (SkinnedMeshRenderer skinnedMeshRenderer in _targetSkinnedMeshRenderers)
+        {
+            int[] result = Bake(skinnedMeshRenderer, vertexOffset, triangleOffset, uvOffset);
+            vertexOffset += result[0];
+            triangleOffset += result[1];
+            uvOffset += result[2];
+        }
 
         UpdateVFX();
         UpdateMaterials();
