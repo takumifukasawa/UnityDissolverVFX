@@ -154,7 +154,7 @@ Transform:
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_Children: []
   m_Father: {fileID: 1875126552}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 90, y: 90, z: -90}
 --- !u!64 &157640984
 MeshCollider:
@@ -250,7 +250,7 @@ Transform:
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_Children: []
   m_Father: {fileID: 1875126552}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 90, y: 90, z: -90}
 --- !u!64 &305953927
 MeshCollider:
@@ -423,9 +423,8 @@ GameObject:
   - component: {fileID: 313532233}
   - component: {fileID: 313532232}
   - component: {fileID: 313532231}
-  - component: {fileID: 313532235}
   m_Layer: 0
-  m_Name: SphereDissolver
+  m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -505,37 +504,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1875126552}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &313532235
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 313532230}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ecc1d2bf7b1f4b440abd0263665fffae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _targetMeshRenderer: {fileID: 313532232}
-  _targetMeshFilter: {fileID: 313532233}
-  _computeShaderSrc: {fileID: 7200000, guid: 0239b0416ad376a4f95934f58cbd448e, type: 3}
-  _dissolveMap: {fileID: 2800000, guid: c37f77080fd7f074da1caef44b8b81bd, type: 3}
-  _dissolveRate: 0.505
-  _edgeFadeIn: 0.46
-  _edgeIn: 0.48
-  _edgeOut: 0.54
-  _edgeFadeOut: 0.56
-  _timeMultiplier: 1
-  _visualEffect: {fileID: 1767914829}
-  _destMapWidth: 64
-  _destMapHeight: 64
-  _dissolveThreshold: 0.5
-  _debugPositionMapMeshRenderer: {fileID: 675206762}
-  _debugNormalMapMeshRenderer: {fileID: 157640985}
-  _debugAlphaMapMeshRenderer: {fileID: 305953928}
 --- !u!1 &570078940
 GameObject:
   m_ObjectHideFlags: 0
@@ -683,7 +653,7 @@ Transform:
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_Children: []
   m_Father: {fileID: 2097973731}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 90, y: 90, z: -90}
 --- !u!64 &658988506
 MeshCollider:
@@ -842,8 +812,75 @@ Transform:
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_Children: []
   m_Father: {fileID: 1875126552}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 90, y: 90, z: -90}
+--- !u!1 &775919146
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 775919147}
+  - component: {fileID: 775919148}
+  m_Layer: 0
+  m_Name: WalkingDissolver
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &775919147
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 775919146}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2097973731}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &775919148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 775919146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f78de0a1d6bb191478ceb19a81501f59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _targetSkinnedMeshRenderers:
+  - {fileID: 787497903}
+  - {fileID: 2042481565}
+  _rootTransform: {fileID: 2048063970}
+  _computeShaderSrc: {fileID: 7200000, guid: 0239b0416ad376a4f95934f58cbd448e, type: 3}
+  _dissolveMap: {fileID: 2800000, guid: c37f77080fd7f074da1caef44b8b81bd, type: 3}
+  _dissolveRate: 0.7
+  _edgeFadeIn: 0.3
+  _edgeIn: 0.35
+  _edgeOut: 0.55
+  _edgeFadeOut: 0.6
+  _timeMultiplier: 1
+  _visualEffect: {fileID: 1202582221}
+  _destMapWidth: 128
+  _destMapHeight: 128
+  _dissolveThreshold: 0.5
+  _debugPositionMapMeshRenderer: {fileID: 885898542}
+  _debugNormalMapMeshRenderer: {fileID: 1013530977}
+  _debugAlphaMapMeshRenderer: {fileID: 658988507}
+--- !u!137 &787497903 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 3853268898807207900, guid: d443127dda3e8ee4ab3c2767ca17daac, type: 3}
+  m_PrefabInstance: {fileID: 1074881606}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &885898539
 GameObject:
   m_ObjectHideFlags: 0
@@ -875,7 +912,7 @@ Transform:
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_Children: []
   m_Father: {fileID: 2097973731}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 90, y: 90, z: -90}
 --- !u!64 &885898541
 MeshCollider:
@@ -971,7 +1008,7 @@ Transform:
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_Children: []
   m_Father: {fileID: 2097973731}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 90, y: 90, z: -90}
 --- !u!64 &1013530976
 MeshCollider:
@@ -1045,7 +1082,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: d443127dda3e8ee4ab3c2767ca17daac, type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d443127dda3e8ee4ab3c2767ca17daac, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1232,7 +1269,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2097973731}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!73398921 &1202582220
 VFXRenderer:
@@ -1387,6 +1424,67 @@ VisualEffect:
       m_Array: []
     m_Bool:
       m_Array: []
+--- !u!1 &1335553181
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1335553182}
+  - component: {fileID: 1335553183}
+  m_Layer: 0
+  m_Name: SphereDissolver
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1335553182
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1335553181}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1875126552}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1335553183
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1335553181}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecc1d2bf7b1f4b440abd0263665fffae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _targetMeshRenderer: {fileID: 313532232}
+  _rootTransform: {fileID: 313532234}
+  _targetMeshFilter: {fileID: 313532233}
+  _computeShaderSrc: {fileID: 7200000, guid: 0239b0416ad376a4f95934f58cbd448e, type: 3}
+  _dissolveMap: {fileID: 2800000, guid: c37f77080fd7f074da1caef44b8b81bd, type: 3}
+  _dissolveRate: 0.505
+  _edgeFadeIn: 0.46
+  _edgeIn: 0.48
+  _edgeOut: 0.54
+  _edgeFadeOut: 0.56
+  _timeMultiplier: 1
+  _visualEffect: {fileID: 1767914829}
+  _destMapWidth: 64
+  _destMapHeight: 64
+  _dissolveThreshold: 0.5
+  _debugPositionMapMeshRenderer: {fileID: 675206762}
+  _debugNormalMapMeshRenderer: {fileID: 157640985}
+  _debugAlphaMapMeshRenderer: {fileID: 305953928}
 --- !u!1 &1767914827
 GameObject:
   m_ObjectHideFlags: 0
@@ -1570,7 +1668,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1875126552}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1875126551
 GameObject:
@@ -1599,6 +1697,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 5.63}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 1335553182}
   - {fileID: 313532234}
   - {fileID: 1767914830}
   - {fileID: 675206764}
@@ -1641,35 +1740,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &2048063972
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2048063969}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f78de0a1d6bb191478ceb19a81501f59, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _targetSkinnedMeshRenderers:
-  - {fileID: 2042481565}
-  _computeShaderSrc: {fileID: 7200000, guid: 0239b0416ad376a4f95934f58cbd448e, type: 3}
-  _dissolveMap: {fileID: 2800000, guid: c37f77080fd7f074da1caef44b8b81bd, type: 3}
-  _dissolveRate: 0.7
-  _edgeFadeIn: 0.3
-  _edgeIn: 0.35
-  _edgeOut: 0.55
-  _edgeFadeOut: 0.6
-  _timeMultiplier: 1
-  _visualEffect: {fileID: 1202582221}
-  _destMapWidth: 128
-  _destMapHeight: 128
-  _dissolveThreshold: 0.5
-  _debugPositionMapMeshRenderer: {fileID: 885898542}
-  _debugNormalMapMeshRenderer: {fileID: 1013530977}
-  _debugAlphaMapMeshRenderer: {fileID: 658988507}
 --- !u!1 &2069479808
 GameObject:
   m_ObjectHideFlags: 0
@@ -1745,6 +1815,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 775919147}
   - {fileID: 2048063970}
   - {fileID: 1202582219}
   - {fileID: 885898540}

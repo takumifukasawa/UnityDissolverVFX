@@ -9,6 +9,9 @@ public class Dissolver : MonoBehaviour
     private MeshRenderer _targetMeshRenderer;
 
     [SerializeField]
+    private Transform _rootTransform;
+
+    [SerializeField]
     private MeshFilter _targetMeshFilter;
 
     [SerializeField]
@@ -164,7 +167,7 @@ public class Dissolver : MonoBehaviour
         _computeShader.SetFloat("EdgeIn", _edgeIn);
         _computeShader.SetFloat("EdgeOut", _edgeOut);
         _computeShader.SetFloat("EdgeFadeOut", _edgeFadeOut);
-        _computeShader.SetMatrix("Transform", transform.localToWorldMatrix);
+        _computeShader.SetMatrix("Transform", _rootTransform.localToWorldMatrix);
         _computeShader.SetFloat("DissolveThreshold", _dissolveThreshold);
         _computeShader.SetFloat("Time", Mathf.Repeat(Time.time * _timeMultiplier, 100f)); // multiply speed and clamp time
 

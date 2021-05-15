@@ -18,6 +18,9 @@ public class SkinnedMeshDissolver : MonoBehaviour
     // private MeshFilter _targetMeshFilter;
 
     [SerializeField]
+    private Transform _rootTransform;
+
+    [SerializeField]
     private ComputeShader _computeShaderSrc;
 
     [SerializeField]
@@ -405,8 +408,8 @@ public class SkinnedMeshDissolver : MonoBehaviour
         _computeShader.SetFloat("EdgeOut", _edgeOut);
         _computeShader.SetFloat("EdgeFadeOut", _edgeFadeOut);
 
-        // TODO: ここがおかしいかもしれない
-        _computeShader.SetMatrix("Transform", transform.localToWorldMatrix);
+        // _computeShader.SetMatrix("Transform", transform.localToWorldMatrix);
+        _computeShader.SetMatrix("Transform", _rootTransform.localToWorldMatrix);
 
         _computeShader.SetFloat("DissolveThreshold", _dissolveThreshold);
         _computeShader.SetFloat("Time", Mathf.Repeat(Time.time * _timeMultiplier, 100f)); // multiply speed and clamp time
