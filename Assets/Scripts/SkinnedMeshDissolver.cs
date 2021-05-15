@@ -166,17 +166,24 @@ public class SkinnedMeshDissolver : MonoBehaviour
 
         // for debug
 
-        _targetMesh = _targetSkinnedMeshRenderers[0].sharedMesh;
+        Mesh testMesh = _targetSkinnedMeshRenderers[0].sharedMesh;
 
-        int[] triangles = _targetMesh.GetTriangles(0);
+        CombineInstance[] testCombinedMesh = new CombineInstance[1];
+        testCombinedMesh[0].mesh = _targetSkinnedMeshRenderers[0].sharedMesh;
+        testCombinedMesh[0].transform = _targetSkinnedMeshRenderers[0].transform.localToWorldMatrix;
+
+        _computeShader.SetMatrix("Transform", testCombinedMesh[0].transform);
+
+
+        int[] triangles = testMesh.GetTriangles(0);
         _trianglesBuffer = new ComputeBuffer(triangles.Length, sizeof(int));
         _trianglesBuffer.SetData(triangles);
 
-        Vector3[] vertices = _targetMesh.vertices;
+        Vector3[] vertices = testMesh.vertices;
         _verticesBuffer = new ComputeBuffer(vertices.Length, sizeof(float) * 3);
         _verticesBuffer.SetData(vertices);
 
-        Vector2[] uv = _targetMesh.uv;
+        Vector2[] uv = testMesh.uv;
         _uvBuffer = new ComputeBuffer(uv.Length, sizeof(float) * 2);
         _uvBuffer.SetData(uv);
 
@@ -319,7 +326,7 @@ public class SkinnedMeshDissolver : MonoBehaviour
         _computeShader.SetFloat("EdgeFadeOut", _edgeFadeOut);
 
         // TODO: ここがおかしいかもしれない
-        _computeShader.SetMatrix("Transform", transform.localToWorldMatrix);
+        // _computeShader.SetMatrix("Transform", transform.localToWorldMatrix);
 
         _computeShader.SetFloat("DissolveThreshold", _dissolveThreshold);
         _computeShader.SetFloat("Time", Mathf.Repeat(Time.time * _timeMultiplier, 100f)); // multiply speed and clamp time
