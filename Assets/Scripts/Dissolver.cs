@@ -12,7 +12,7 @@ public class Dissolver : MonoBehaviour
     private MeshFilter _targetMeshFilter;
 
     [SerializeField]
-    private ComputeShader _computeShader;
+    private ComputeShader _computeShaderSrc;
 
     [SerializeField]
     private Texture2D _dissolveMap;
@@ -59,6 +59,8 @@ public class Dissolver : MonoBehaviour
     [SerializeField]
     private MeshRenderer _debugAlphaMapMeshRenderer;
 
+    private ComputeShader _computeShader;
+
     private Mesh _targetMesh;
 
     private RenderTexture _positionMap;
@@ -82,6 +84,8 @@ public class Dissolver : MonoBehaviour
 
     void Start()
     {
+        _computeShader = Instantiate(_computeShaderSrc);
+
         // init mesh
 
         _targetMesh = _targetMeshFilter.mesh;

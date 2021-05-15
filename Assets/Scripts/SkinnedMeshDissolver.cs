@@ -18,7 +18,7 @@ public class SkinnedMeshDissolver : MonoBehaviour
     // private MeshFilter _targetMeshFilter;
 
     [SerializeField]
-    private ComputeShader _computeShader;
+    private ComputeShader _computeShaderSrc;
 
     [SerializeField]
     private Texture2D _dissolveMap;
@@ -65,6 +65,8 @@ public class SkinnedMeshDissolver : MonoBehaviour
     [SerializeField]
     private MeshRenderer _debugAlphaMapMeshRenderer;
 
+    private ComputeShader _computeShader;
+
     private Mesh _targetMesh;
 
     private RenderTexture _positionMap;
@@ -90,6 +92,8 @@ public class SkinnedMeshDissolver : MonoBehaviour
 
     void Start()
     {
+        _computeShader = Instantiate(_computeShaderSrc);
+
         // init mesh
 
         _targetMesh = new Mesh();
