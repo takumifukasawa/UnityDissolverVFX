@@ -1,18 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Collections;
+using Unity.Mathematics;
 using UnityEngine.VFX;
+using System.Linq;
 
 public class Dissolver : MonoBehaviour
 {
+    // [SerializeField]
+    // private SkinnedMeshRenderer _targetMeshRenderer;
+
     [SerializeField]
-    private MeshRenderer _targetMeshRenderer;
+    private MeshFilter[] _targetMeshFilters = null;
+
+    [SerializeField]
+    private MeshRenderer[] _targetMeshRenderers = null;
+
+    // [SerializeField]
+    // private MeshFilter _targetMeshFilter;
 
     [SerializeField]
     private Transform _rootTransform;
-
-    [SerializeField]
-    private MeshFilter _targetMeshFilter;
 
     [SerializeField]
     private ComputeShader _computeShaderSrc;
@@ -78,12 +87,14 @@ public class Dissolver : MonoBehaviour
 
     private ComputeBuffer _uvBuffer;
 
-    private MaterialPropertyBlock _dissolveLitMeshMaterialPropertyBlock;
+    private MaterialPropertyBlock[] _dissolveMaterialPropertyBlocks = null;
 
     // for debug
     private MaterialPropertyBlock _debugPositionMapMaterialPropertyBlock;
     private MaterialPropertyBlock _debugNormalMapMaterialPropertyBlock;
     private MaterialPropertyBlock _debugAlphaMapMaterialPropertyBlock;
+
+    // private Mesh _tmpMesh;
 
     void Start()
     {
@@ -91,7 +102,11 @@ public class Dissolver : MonoBehaviour
 
         // init mesh
 
-        _targetMesh = _targetMeshFilter.mesh;
+        _targetMesh = new Mesh();
+        _targetMesh.hideFlags = HideFlags.DontSave;
+
+        // _targetMesh = _targetMeshFilter.mesh;
+        // _targetMesh = _targetMeshRenderer.sharedMesh
 
         // init textures
 
@@ -118,17 +133,145 @@ public class Dissolver : MonoBehaviour
 
         // init buffer
 
-        int[] triangles = _targetMesh.GetTriangles(0);
+        Mesh combinedMesh = new Mesh();
+        // combinedMesh.name = "hoge";
+        combinedMesh.hideFlags = HideFlags.DontSave;
+        CombineInstance[] combineInstanceArray = new CombineInstance[_targetMeshFilters.Length];
+        for (int i = 0; i < _targetMeshFilters.Length; i++)
+        {
+            combineInstanceArray[i].mesh = _targetMeshFilters[i].sharedMesh;
+            combineInstanceArray[i].transform = _targetMeshFilters[i].transform.localToWorldMatrix;
+            Debug.Log("### mesh info ###");
+            Debug.Log(i);
+            Debug.Log("indices");
+            Debug.Log(_targetMeshFilters[i].sharedMesh.GetTriangles(0).Length);
+            Debug.Log("vertices");
+            Debug.Log(_targetMeshFilters[i].sharedMesh.vertices.Length);
+            // Debug.Log("uvs");
+            // Debug.Log(_targetSkinnedMeshRenderers[i].sharedMesh.GetUVs(0));
+        }
+        combinedMesh.CombineMeshes(combineInstanceArray);
+
+        // // for looper
+
+        // int[] triangles = _targetMeshRenderer.sharedMesh.GetTriangles(0);
+        int[] triangles = combinedMesh.triangles;
         _trianglesBuffer = new ComputeBuffer(triangles.Length, sizeof(int));
-        _trianglesBuffer.SetData(triangles);
 
-        Vector3[] vertices = _targetMesh.vertices;
+        // Vector3[] vertices = _targetMeshRenderer.sharedMesh.vertices;
+        Vector3[] vertices = combinedMesh.vertices;
         _verticesBuffer = new ComputeBuffer(vertices.Length, sizeof(float) * 3);
-        _verticesBuffer.SetData(vertices);
 
-        Vector2[] uv = _targetMesh.uv;
+        // Vector2[] uv = _targetMeshRenderer.sharedMesh.uv;
+        Vector2[] uv = combinedMesh.uv;
         _uvBuffer = new ComputeBuffer(uv.Length, sizeof(float) * 2);
-        _uvBuffer.SetData(uv);
+
+        Debug.Log("==========");
+        Debug.Log("vertices");
+        Debug.Log(vertices.Length);
+        Debug.Log("uv count");
+        Debug.Log(uv.Length);
+        Debug.Log("triangles");
+        Debug.Log(triangles.Length / 3);
+
+        // // for debug
+
+        // Mesh testMesh = _targetSkinnedMeshRenderers[0].sharedMesh;
+
+        // CombineInstance[] testCombinedMesh = new CombineInstance[1];
+        // testCombinedMesh[0].mesh = _targetSkinnedMeshRenderers[0].sharedMesh;
+        // testCombinedMesh[0].transform = _targetSkinnedMeshRenderers[0].transform.localToWorldMatrix;
+
+        // _computeShader.SetMatrix("Transform", testCombinedMesh[0].transform);
+
+        // int[] triangles = testMesh.GetTriangles(0);
+        // _trianglesBuffer = new ComputeBuffer(triangles.Length, sizeof(int));
+        // // _trianglesBuffer.SetData(triangles);
+
+        // Vector3[] vertices = testMesh.vertices;
+        // _verticesBuffer = new ComputeBuffer(vertices.Length, sizeof(float) * 3);
+        // // _verticesBuffer.SetData(vertices);
+
+        // Vector2[] uv = testMesh.uv;
+        // _uvBuffer = new ComputeBuffer(uv.Length, sizeof(float) * 2);
+        // // _uvBuffer.SetData(uv);
+
+        // using (Mesh.MeshDataArray dataArray = Mesh.AcquireReadOnlyMeshData(testMesh))
+        // {
+        //     Mesh.MeshData data = dataArray[0];
+        //     int vertexCount = data.vertexCount;
+        //     // Debug.Log("using vertex count");
+        //     // Debug.Log(vertexCount);
+        //     int triangleCount = testMesh.triangles.Length;
+        //     // NOTE: equal vertex count
+        //     int uvCount = vertexCount;
+
+        //     using (NativeArray<Vector3> positionArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+        //     // using(NativeArray<Vector3> normalArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+        //     using (NativeArray<int> triangleArray = new NativeArray<int>(triangleCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+        //     using (NativeArray<Vector2> uvArray = new NativeArray<Vector2>(uvCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+        //     {
+        //         data.GetVertices(positionArray);
+        //         // data.GetNormals(normalArray);
+        //         data.GetIndices(triangleArray, 0);
+        //         data.GetUVs(0, uvArray);
+
+        //         // _verticesBuffer.SetData(positionArray, 0, 0, vertexCount);
+        //         // _trianglesBuffer.SetData(triangleArray, 0, 0, triangleCount);
+        //         // _uvBuffer.SetData(uvArray, 0, 0, uvCount);
+        //         _verticesBuffer.SetData(positionArray);
+        //         _trianglesBuffer.SetData(triangleArray);
+        //         _uvBuffer.SetData(uvArray);
+        //      }
+        // }
+
+        // using (Mesh.MeshDataArray dataArray = Mesh.AcquireReadOnlyMeshData(testMesh))
+        // {
+        //     Mesh.MeshData data = dataArray[0];
+        //     int vertexCount = data.vertexCount;
+        //     // Debug.Log("using vertex count");
+        //     // Debug.Log(vertexCount);
+        //     int triangleCount = testMesh.triangles.Length;
+        //     // NOTE: equal vertex count
+        //     int uvCount = vertexCount;
+
+        //     using (NativeArray<Vector3> positionArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+        //     // using(NativeArray<Vector3> normalArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+        //     using (NativeArray<ushort> triangleArray = new NativeArray<ushort>(triangleCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+        //     using (NativeArray<Vector2> uvArray = new NativeArray<Vector2>(uvCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+        //     {
+        //         data.GetVertices(positionArray);
+        //         // data.GetNormals(normalArray);
+        //         data.GetIndices(triangleArray, 0);
+        //         data.GetUVs(0, uvArray);
+        //     
+        //         // Debug.Log("----------------------------------------------------");
+        //         // for(int i = 0; i < positionArray.Length; i++) {
+        //         //     Debug.Log(positionArray[i]);
+        //         // }
+        //         // Debug.Log("vertex count");
+        //         // Debug.Log(vertexCount);
+        //         // Debug.Log("triangle count");
+        //         // Debug.Log(triangleCount);
+        //         // Debug.Log("positionArray length");
+        //         // Debug.Log(positionArray.Length);
+        //         // Debug.Log("uvArray length");
+        //         // Debug.Log(uvArray.Length);
+        //         // Debug.Log("triangleArray length");
+        //         // Debug.Log(triangleArray.Length);
+        //         // Debug.Log("positionArray[vertexCount - 1]");
+        //         // Debug.Log(positionArray[vertexCount - 1]);
+        //         // Debug.Log("uvArray[vertexCount - 1]");
+        //         // Debug.Log(uvArray[vertexCount - 1]);
+        //         // Debug.Log("triangleArray[triangleCount - 1]");
+        //         // Debug.Log(triangleArray[triangleCount - 1]);
+
+        //         _verticesBuffer.SetData(positionArray, 0, 0, vertexCount);
+        //         _trianglesBuffer.SetData(triangleArray, 0, 0, triangleCount);
+        //         _uvBuffer.SetData(uvArray, 0, 0, uvCount);
+        //     }
+        // }
+
 
         // init compute shader
 
@@ -149,79 +292,100 @@ public class Dissolver : MonoBehaviour
 
         // init material
 
-        _dissolveLitMeshMaterialPropertyBlock = new MaterialPropertyBlock();
+        _dissolveMaterialPropertyBlocks = new MaterialPropertyBlock[_targetMeshRenderers.Length];
+        for (int i = 0; i < _targetMeshRenderers.Length; i++)
+        {
+            _dissolveMaterialPropertyBlocks[i] = new MaterialPropertyBlock();
+        }
 
         // for debug
 
         _debugPositionMapMaterialPropertyBlock = new MaterialPropertyBlock();
         _debugNormalMapMaterialPropertyBlock = new MaterialPropertyBlock();
         _debugAlphaMapMaterialPropertyBlock = new MaterialPropertyBlock();
+
+        ExecCompute();
     }
 
     // Update is called once per frame
     void Update()
     {
-        _computeShader.SetFloat("DissolveRate", _dissolveRate);
-        _computeShader.SetFloat("EdgeFadeIn", _edgeFadeIn);
-        _computeShader.SetFloat("EdgeFadeIn", _edgeFadeIn);
-        _computeShader.SetFloat("EdgeIn", _edgeIn);
-        _computeShader.SetFloat("EdgeOut", _edgeOut);
-        _computeShader.SetFloat("EdgeFadeOut", _edgeFadeOut);
-        _computeShader.SetMatrix("Transform", _rootTransform.localToWorldMatrix);
-        _computeShader.SetFloat("DissolveThreshold", _dissolveThreshold);
-        _computeShader.SetFloat("Time", Mathf.Repeat(Time.time * _timeMultiplier, 100f)); // multiply speed and clamp time
+        ExecCompute();
+    }
 
-        _computeShader.Dispatch(
-            kernelID,
-            _destMapWidth,
-            _destMapHeight,
-            1
-        );
+    int[] Bake(Mesh mesh, int vertexOffset, int triangleOffset, int uvOffset)
+    {
+        // skinnedMeshRenderer.BakeMesh(_targetMesh);
 
-        _visualEffect.SetTexture("PositionMap", _positionMap);
-        _visualEffect.SetTexture("NormalMap", _normalMap);
-        _visualEffect.SetTexture("AlphaMap", _alphaMap);
+        using (Mesh.MeshDataArray dataArray = Mesh.AcquireReadOnlyMeshData(mesh))
+        {
+            Mesh.MeshData data = dataArray[0];
+            int vertexCount = data.vertexCount;
+            // Debug.Log("using vertex count");
+            // Debug.Log(vertexCount);
+            int triangleCount = mesh.triangles.Length;
+            // NOTE: equal vertex count
+            int uvCount = vertexCount;
 
-        // # DissolveMap
-        // Texture2D_54ef741b959443bd9e9b02b73af70d78
-        // # DissolveRate
-        // Vector1_63f8f76926274e71baf1152131955b40
-        // # DissolveEdgeFadeIn
-        // Vector1_3a7f40d2e0244addbc31eb5c9f2b8f9d
-        // # DissolveEdgeIn
-        // Vector1_851d11a93fec42da93e7eba4b6c35708
-        // # DissolveEdgeOut
-        // Vector1_44e9cc11c7704e7fbc993b924f68246d
-        // # DissolveEdgeFadeOut
-        // Vector1_163470858c784a7cb704a8fc07733679
+            using (NativeArray<Vector3> positionArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+            // using(NativeArray<Vector3> normalArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+            using (NativeArray<int> triangleArray = new NativeArray<int>(triangleCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+            using (NativeArray<Vector2> uvArray = new NativeArray<Vector2>(uvCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+            {
+                data.GetVertices(positionArray);
+                // data.GetNormals(normalArray);
+                data.GetIndices(triangleArray, 0);
+                data.GetUVs(0, uvArray);
+            
+                // Debug.Log("----------------------------------------------------");
+                // for(int i = 0; i < positionArray.Length; i++) {
+                //     Debug.Log(positionArray[i]);
+                // }
+                // Debug.Log("vertex count");
+                // Debug.Log(vertexCount);
+                // Debug.Log("triangle count");
+                // Debug.Log(triangleCount);
+                // Debug.Log("positionArray length");
+                // Debug.Log(positionArray.Length);
+                // Debug.Log("uvArray length");
+                // Debug.Log(uvArray.Length);
+                // Debug.Log("triangleArray length");
+                // Debug.Log(triangleArray.Length);
+                // Debug.Log("positionArray[vertexCount - 1]");
+                // Debug.Log(positionArray[vertexCount - 1]);
+                // Debug.Log("uvArray[vertexCount - 1]");
+                // Debug.Log(uvArray[vertexCount - 1]);
+                // Debug.Log("triangleArray[triangleCount - 1]");
+                // Debug.Log(triangleArray[triangleCount - 1]);
 
-        _targetMeshRenderer.GetPropertyBlock(_dissolveLitMeshMaterialPropertyBlock);
+                _verticesBuffer.SetData(positionArray, 0, vertexOffset, vertexCount);
+                _trianglesBuffer.SetData(triangleArray, 0, triangleOffset, triangleCount);
+                _uvBuffer.SetData(uvArray, 0, uvOffset, uvCount);
+            }
 
-        _dissolveLitMeshMaterialPropertyBlock.SetTexture(
-            "Texture2D_54ef741b959443bd9e9b02b73af70d78",
-            _dissolveMap
-        );
-        _dissolveLitMeshMaterialPropertyBlock.SetFloat(
-            "Vector1_63f8f76926274e71baf1152131955b40",
-            _dissolveRate
-        );
-        _dissolveLitMeshMaterialPropertyBlock.SetFloat(
-            "Vector1_3a7f40d2e0244addbc31eb5c9f2b8f9d",
-            _edgeFadeIn
-        );
-        _dissolveLitMeshMaterialPropertyBlock.SetFloat(
-            "Vector1_851d11a93fec42da93e7eba4b6c35708",
-            _edgeIn
-        );
-        _dissolveLitMeshMaterialPropertyBlock.SetFloat(
-            "Vector1_44e9cc11c7704e7fbc993b924f68246d",
-            _edgeOut
-        );
-        _dissolveLitMeshMaterialPropertyBlock.SetFloat(
-            "Vector1_163470858c784a7cb704a8fc07733679",
-            _edgeFadeOut
-        );
-        _targetMeshRenderer.SetPropertyBlock(_dissolveLitMeshMaterialPropertyBlock);
+            int[] result = new int[3];
+            result[0] = vertexCount;
+            result[1] = triangleCount;
+            result[2] = uvCount;
+            return result;
+        }
+    }
+
+    void ExecCompute() {
+        int vertexOffset = 0;
+        int triangleOffset = 0;
+        int uvOffset = 0;
+
+        foreach (MeshFilter meshFilter in _targetMeshFilters)
+        {
+            int[] result = Bake(meshFilter.sharedMesh, vertexOffset, triangleOffset, uvOffset);
+            vertexOffset += result[0];
+            triangleOffset += result[1];
+            uvOffset += result[2];
+        }
+
+        UpdateVFX();
+        UpdateMaterials();
 
         // for debug
 
@@ -236,6 +400,82 @@ public class Dissolver : MonoBehaviour
         _debugAlphaMapMeshRenderer.GetPropertyBlock(_debugAlphaMapMaterialPropertyBlock);
         _debugAlphaMapMaterialPropertyBlock.SetTexture("_BaseMap", _alphaMap);
         _debugAlphaMapMeshRenderer.SetPropertyBlock(_debugAlphaMapMaterialPropertyBlock);
+    }
+
+    void UpdateVFX()
+    {
+        _computeShader.SetFloat("DissolveRate", _dissolveRate);
+        _computeShader.SetFloat("EdgeFadeIn", _edgeFadeIn);
+        _computeShader.SetFloat("EdgeFadeIn", _edgeFadeIn);
+        _computeShader.SetFloat("EdgeIn", _edgeIn);
+        _computeShader.SetFloat("EdgeOut", _edgeOut);
+        _computeShader.SetFloat("EdgeFadeOut", _edgeFadeOut);
+
+        // _computeShader.SetMatrix("Transform", transform.localToWorldMatrix);
+        _computeShader.SetMatrix("Transform", _rootTransform.localToWorldMatrix);
+
+        _computeShader.SetFloat("DissolveThreshold", _dissolveThreshold);
+        _computeShader.SetFloat("Time", Mathf.Repeat(Time.time * _timeMultiplier, 100f)); // multiply speed and clamp time
+
+        _computeShader.Dispatch(
+            kernelID,
+            _destMapWidth,
+            _destMapHeight,
+            1
+        );
+
+        _visualEffect.SetTexture("PositionMap", _positionMap);
+        _visualEffect.SetTexture("NormalMap", _normalMap);
+        _visualEffect.SetTexture("AlphaMap", _alphaMap);
+    }
+
+    void UpdateMaterials()
+    {
+        // # DissolveMap
+        // Texture2D_54ef741b959443bd9e9b02b73af70d78
+        // # DissolveRate
+        // Vector1_63f8f76926274e71baf1152131955b40
+        // # DissolveEdgeFadeIn
+        // Vector1_3a7f40d2e0244addbc31eb5c9f2b8f9d
+        // # DissolveEdgeIn
+        // Vector1_851d11a93fec42da93e7eba4b6c35708
+        // # DissolveEdgeOut
+        // Vector1_44e9cc11c7704e7fbc993b924f68246d
+        // # DissolveEdgeFadeOut
+        // Vector1_163470858c784a7cb704a8fc07733679
+
+        for (int i = 0; i < _targetMeshRenderers.Length; i++)
+        {
+            MeshRenderer meshRenderer = _targetMeshRenderers[i];
+            MaterialPropertyBlock materialPropertyBlock = _dissolveMaterialPropertyBlocks[i];
+            meshRenderer.GetPropertyBlock(materialPropertyBlock);
+
+            materialPropertyBlock.SetTexture(
+                "Texture2D_54ef741b959443bd9e9b02b73af70d78",
+                _dissolveMap
+            );
+            materialPropertyBlock.SetFloat(
+                "Vector1_63f8f76926274e71baf1152131955b40",
+                _dissolveRate
+            );
+            materialPropertyBlock.SetFloat(
+                "Vector1_3a7f40d2e0244addbc31eb5c9f2b8f9d",
+                _edgeFadeIn
+            );
+            materialPropertyBlock.SetFloat(
+                "Vector1_851d11a93fec42da93e7eba4b6c35708",
+                _edgeIn
+            );
+            materialPropertyBlock.SetFloat(
+                "Vector1_44e9cc11c7704e7fbc993b924f68246d",
+                _edgeOut
+            );
+            materialPropertyBlock.SetFloat(
+                "Vector1_163470858c784a7cb704a8fc07733679",
+                _edgeFadeOut
+            );
+            meshRenderer.SetPropertyBlock(materialPropertyBlock);
+        }
     }
 
     void OnDisable()
@@ -288,5 +528,9 @@ public class Dissolver : MonoBehaviour
         DestroyObj(_positionMap);
         DestroyObj(_normalMap);
         DestroyObj(_alphaMap);
+
+        DestroyObj(_targetMesh);
+        _targetMesh = null;
     }
 }
+

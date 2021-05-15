@@ -1140,6 +1140,10 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 713e013d2c1268940842d4ea30250b0f, type: 2}
+    - target: {fileID: 7021014693780275094, guid: d443127dda3e8ee4ab3c2767ca17daac, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7882376022164389543, guid: d443127dda3e8ee4ab3c2767ca17daac, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -1467,9 +1471,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecc1d2bf7b1f4b440abd0263665fffae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _targetMeshRenderer: {fileID: 313532232}
+  _targetMeshFilters:
+  - {fileID: 313532233}
+  _targetMeshRenderers:
+  - {fileID: 313532232}
   _rootTransform: {fileID: 313532234}
-  _targetMeshFilter: {fileID: 313532233}
   _computeShaderSrc: {fileID: 7200000, guid: 0239b0416ad376a4f95934f58cbd448e, type: 3}
   _dissolveMap: {fileID: 2800000, guid: c37f77080fd7f074da1caef44b8b81bd, type: 3}
   _dissolveRate: 0.505
