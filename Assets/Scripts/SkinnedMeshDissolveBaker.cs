@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.VFX;
+using Utilities;
 
 namespace DissolverVFX {
     public class SkinnedMeshDissolveBaker : MonoBehaviour {
@@ -45,8 +46,8 @@ namespace DissolverVFX {
         [SerializeField, Range(0, 1)]
         private float _dissolveThreshold = 0.5f;
 
-        // for debug
         private DissolveBaker _dissolveBaker;
+
 
         public RenderTexture positionMap
         {
@@ -85,6 +86,18 @@ namespace DissolverVFX {
             get { return _edgeFadeOut; }
         }
 
+        // for debug
+
+        [SerializeField]
+        private bool _enableDebug;
+        private MeshRenderer _debugPositionMapMeshRenderer;
+        private MeshRenderer _debugNormalMapMeshRenderer;
+        private MeshRenderer _debugAlphaMapMeshRenderer;
+
+        private MaterialPropertyBlock _debugPositionMapMaterialPropertyBlock;
+        private MaterialPropertyBlock _debugNormalMapMaterialPropertyBlock;
+        private MaterialPropertyBlock _debugAlphaMapMaterialPropertyBlock;
+
         void Start()
         {
             Mesh[] meshes = new Mesh[_targetSkinnedMeshRenderers.Length];
@@ -95,6 +108,47 @@ namespace DissolverVFX {
             _dissolveBaker = new DissolveBaker(Instantiate(_computeShader), meshes, _dissolveMap, _destMapWidth, _destMapHeight);
 
             _dissolveBaker.Initialize();
+
+            // for debug
+
+            if(_enableDebug)
+            {
+                Material ma = Resources.Load<Material>("Materials/Unlit");
+
+                GameObject debugPositionMapObj = CreateDebugPlane("DEBUG position map plane");
+                debugPositionMapObj.transform.SetParent(transform);
+                debugPositionMapObj.transform.position = new Vector3(2, 0.5f, 0);
+                debugPositionMapObj.transform.rotation = Quaternion.Euler(0, 180f, 0);
+                _debugPositionMapMeshRenderer = debugPositionMapObj.GetComponent<MeshRenderer>();
+                _debugPositionMapMaterialPropertyBlock = new MaterialPropertyBlock();
+                _debugPositionMapMeshRenderer.material = ma;
+
+                GameObject debugNormalMapObj = CreateDebugPlane("DEBUG normal map plane");
+                debugNormalMapObj.transform.SetParent(transform);
+                debugNormalMapObj.transform.position = new Vector3(3.1f, 0.5f, 0);
+                debugNormalMapObj.transform.rotation = Quaternion.Euler(0, 180f, 0);
+                _debugNormalMapMeshRenderer = debugNormalMapObj.GetComponent<MeshRenderer>();
+                _debugNormalMapMaterialPropertyBlock = new MaterialPropertyBlock();
+                _debugNormalMapMeshRenderer.sharedMaterial = ma;
+
+                GameObject debugAlphaMapObj = CreateDebugPlane("DEBUG alpha map plane");
+                _debugAlphaMapMeshRenderer = debugAlphaMapObj.GetComponent<MeshRenderer>();
+                debugAlphaMapObj.transform.position = new Vector3(4.2f, 0.5f, 0);
+                debugAlphaMapObj.transform.SetParent(transform);
+                debugAlphaMapObj.transform.rotation = Quaternion.Euler(0, 180f, 0);
+                _debugAlphaMapMaterialPropertyBlock = new MaterialPropertyBlock();
+                _debugAlphaMapMeshRenderer.sharedMaterial = ma;
+            }
+        }
+
+        private GameObject CreateDebugPlane(string name)
+        {
+            GameObject obj = new GameObject(name);
+            MeshRenderer meshRenderer = obj.AddComponent<MeshRenderer>();
+            MeshFilter meshFilter = obj.AddComponent<MeshFilter>();
+            Mesh mesh = MeshUtilities.CreatePlane();
+            meshFilter.mesh = mesh;
+            return obj;
         }
 
         void Update()
@@ -112,6 +166,23 @@ namespace DissolverVFX {
                 _destMapHeight,
                 _dissolveThreshold
             );
+
+            // for debug
+                
+            if(_enableDebug)
+            {
+                _debugPositionMapMeshRenderer.GetPropertyBlock(_debugPositionMapMaterialPropertyBlock);
+                _debugPositionMapMaterialPropertyBlock.SetTexture("_BaseMap", _dissolveBaker.positionMap);
+                _debugPositionMapMeshRenderer.SetPropertyBlock(_debugPositionMapMaterialPropertyBlock);
+
+                _debugNormalMapMeshRenderer.GetPropertyBlock(_debugNormalMapMaterialPropertyBlock);
+                _debugNormalMapMaterialPropertyBlock.SetTexture("_BaseMap", _dissolveBaker.normalMap);
+                _debugNormalMapMeshRenderer.SetPropertyBlock(_debugNormalMapMaterialPropertyBlock);
+
+                _debugAlphaMapMeshRenderer.GetPropertyBlock(_debugAlphaMapMaterialPropertyBlock);
+                _debugAlphaMapMaterialPropertyBlock.SetTexture("_BaseMap", _dissolveBaker.alphaMap);
+                _debugAlphaMapMeshRenderer.SetPropertyBlock(_debugAlphaMapMaterialPropertyBlock);
+            }
         }
 
         void UpdateVFX() {

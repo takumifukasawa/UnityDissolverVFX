@@ -640,7 +640,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &658988505
 Transform:
   m_ObjectHideFlags: 0
@@ -863,9 +863,6 @@ MonoBehaviour:
   - {fileID: 787497903}
   - {fileID: 2042481565}
   _visualEffect: {fileID: 1202582221}
-  _debugPositionMapMeshRenderer: {fileID: 885898542}
-  _debugNormalMapMeshRenderer: {fileID: 1013530977}
-  _debugAlphaMapMeshRenderer: {fileID: 658988507}
 --- !u!114 &775919149
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -894,9 +891,7 @@ MonoBehaviour:
   _destMapWidth: 128
   _destMapHeight: 128
   _dissolveThreshold: 0.5
-  _debugPositionMapMeshRenderer: {fileID: 885898542}
-  _debugNormalMapMeshRenderer: {fileID: 1013530977}
-  _debugAlphaMapMeshRenderer: {fileID: 658988507}
+  _enableDebug: 1
 --- !u!137 &787497903 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 3853268898807207900, guid: d443127dda3e8ee4ab3c2767ca17daac, type: 3}
@@ -920,7 +915,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &885898540
 Transform:
   m_ObjectHideFlags: 0
@@ -1016,7 +1011,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1013530975
 Transform:
   m_ObjectHideFlags: 0
