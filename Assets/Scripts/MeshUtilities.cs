@@ -8,9 +8,6 @@ namespace Utilities
     {
         static public Mesh CreatePlane()
         {
-            // GameObject obj = new GameObject("Plane");
-            // MeshFilter meshFilter = obj.AddComponent<MeshFilter>();
-            // MeshRenderer meshRenderer = obj.AddComponent<MeshRenderer>();
             // 0 -------- 1
             // |        / |
             // |       /  |

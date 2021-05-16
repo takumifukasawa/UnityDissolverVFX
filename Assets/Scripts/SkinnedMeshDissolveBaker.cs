@@ -185,12 +185,6 @@ namespace DissolverVFX {
             }
         }
 
-        void UpdateVFX() {
-            _visualEffect.SetTexture("PositionMap", _dissolveBaker.positionMap);
-            _visualEffect.SetTexture("NormalMap", _dissolveBaker.normalMap);
-            _visualEffect.SetTexture("AlphaMap", _dissolveBaker.alphaMap);
-        }
-
         void OnDisable()
         {
             Dispose();

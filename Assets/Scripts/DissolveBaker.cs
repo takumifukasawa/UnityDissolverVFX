@@ -168,10 +168,6 @@ namespace DissolverVFX {
             int destMapHeight,
             float dissolveThreshold
         ) {                
-            // if(!IsValid()) {
-            //     Initialize();
-            // }
-
             int vertexOffset = 0;
             int triangleOffset = 0;
             int uvOffset = 0;
@@ -191,7 +187,6 @@ namespace DissolverVFX {
             _computeShader.SetFloat("EdgeOut", edgeOut);
             _computeShader.SetFloat("EdgeFadeOut", edgeFadeOut);
 
-            // _computeShader.SetMatrix("Transform", transform.localToWorldMatrix);
             _computeShader.SetMatrix("Transform", rootMatrix);
 
             _computeShader.SetFloat("DissolveThreshold", dissolveThreshold);
@@ -218,10 +213,6 @@ namespace DissolverVFX {
             int destMapHeight,
             float dissolveThreshold
         ) {                
-            // if(!IsValid()) {
-            //     Initialize();
-            // }
-
             int vertexOffset = 0;
             int triangleOffset = 0;
             int uvOffset = 0;
@@ -241,7 +232,6 @@ namespace DissolverVFX {
             _computeShader.SetFloat("EdgeOut", edgeOut);
             _computeShader.SetFloat("EdgeFadeOut", edgeFadeOut);
 
-            // _computeShader.SetMatrix("Transform", transform.localToWorldMatrix);
             _computeShader.SetMatrix("Transform", rootMatrix);
 
             _computeShader.SetFloat("DissolveThreshold", dissolveThreshold);
