@@ -101,7 +101,7 @@ namespace DissolverVFX {
 
             if(_enableDebug)
             {
-                Material ma = Resources.Load<Material>("Materials/Unlit");
+                Material mat = Resources.Load<Material>("Materials/Unlit");
 
                 GameObject debugPositionMapObj = CreateDebugPlane("DEBUG position map plane");
                 debugPositionMapObj.transform.SetParent(transform);
@@ -109,7 +109,7 @@ namespace DissolverVFX {
                 debugPositionMapObj.transform.rotation = Quaternion.Euler(0, 180f, 0);
                 _debugPositionMapMeshRenderer = debugPositionMapObj.GetComponent<MeshRenderer>();
                 _debugPositionMapMaterialPropertyBlock = new MaterialPropertyBlock();
-                _debugPositionMapMeshRenderer.material = ma;
+                _debugPositionMapMeshRenderer.material = mat;
 
                 GameObject debugNormalMapObj = CreateDebugPlane("DEBUG normal map plane");
                 debugNormalMapObj.transform.SetParent(transform);
@@ -117,7 +117,7 @@ namespace DissolverVFX {
                 debugNormalMapObj.transform.rotation = Quaternion.Euler(0, 180f, 0);
                 _debugNormalMapMeshRenderer = debugNormalMapObj.GetComponent<MeshRenderer>();
                 _debugNormalMapMaterialPropertyBlock = new MaterialPropertyBlock();
-                _debugNormalMapMeshRenderer.sharedMaterial = ma;
+                _debugNormalMapMeshRenderer.sharedMaterial = mat;
 
                 GameObject debugAlphaMapObj = CreateDebugPlane("DEBUG alpha map plane");
                 debugAlphaMapObj.transform.SetParent(transform);
@@ -125,7 +125,7 @@ namespace DissolverVFX {
                 debugAlphaMapObj.transform.rotation = Quaternion.Euler(0, 180f, 0);
                 _debugAlphaMapMeshRenderer = debugAlphaMapObj.GetComponent<MeshRenderer>();
                 _debugAlphaMapMaterialPropertyBlock = new MaterialPropertyBlock();
-                _debugAlphaMapMeshRenderer.sharedMaterial = ma;
+                _debugAlphaMapMeshRenderer.sharedMaterial = mat;
             }
         }
 
