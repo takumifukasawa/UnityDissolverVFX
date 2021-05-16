@@ -155,6 +155,41 @@ namespace DissolverVFX {
             // skinnedMeshRenderer.BakeMesh(_targetMesh);
         }
 
+        void SetUniformAndDispatch(
+            Matrix4x4 rootMatrix,
+            float dissolveRate,
+            float edgeFadeIn,
+            float edgeIn,
+            float edgeOut,
+            float edgeFadeOut,
+            float timeMultiplier,
+            int destMapWidth,
+            int destMapHeight,
+            float dissolveThreshold
+        ) {
+
+            _computeShader.SetFloat("DissolveRate", dissolveRate);
+            _computeShader.SetFloat("EdgeFadeIn", edgeFadeIn);
+            _computeShader.SetFloat("EdgeFadeIn", edgeFadeIn);
+            _computeShader.SetFloat("EdgeIn", edgeIn);
+            _computeShader.SetFloat("EdgeOut", edgeOut);
+            _computeShader.SetFloat("EdgeFadeOut", edgeFadeOut);
+
+            _computeShader.SetMatrix("Transform", rootMatrix);
+
+            _computeShader.SetFloat("DissolveThreshold", dissolveThreshold);
+            _computeShader.SetFloat("Time", Mathf.Repeat(Time.time * timeMultiplier, 100f)); // multiply speed and clamp time
+
+            _computeShader.Dispatch(
+                kernelID,
+                _destMapWidth,
+                _destMapHeight,
+                1
+            );
+        }
+
+
+
         public void Bake(
             Mesh[] meshes,
             Matrix4x4 rootMatrix,
@@ -180,23 +215,17 @@ namespace DissolverVFX {
                 uvOffset += result[2];
             }
 
-            _computeShader.SetFloat("DissolveRate", dissolveRate);
-            _computeShader.SetFloat("EdgeFadeIn", edgeFadeIn);
-            _computeShader.SetFloat("EdgeFadeIn", edgeFadeIn);
-            _computeShader.SetFloat("EdgeIn", edgeIn);
-            _computeShader.SetFloat("EdgeOut", edgeOut);
-            _computeShader.SetFloat("EdgeFadeOut", edgeFadeOut);
-
-            _computeShader.SetMatrix("Transform", rootMatrix);
-
-            _computeShader.SetFloat("DissolveThreshold", dissolveThreshold);
-            _computeShader.SetFloat("Time", Mathf.Repeat(Time.time * timeMultiplier, 100f)); // multiply speed and clamp time
-
-            _computeShader.Dispatch(
-                kernelID,
-                _destMapWidth,
-                _destMapHeight,
-                1
+            SetUniformAndDispatch(
+                rootMatrix,
+                dissolveRate,
+                edgeFadeIn,
+                edgeIn,
+                edgeOut,
+                edgeFadeOut,
+                timeMultiplier,
+                destMapWidth,
+                destMapHeight,
+                dissolveThreshold
             );
         }
 
@@ -225,23 +254,17 @@ namespace DissolverVFX {
                 uvOffset += result[2];
             }
 
-            _computeShader.SetFloat("DissolveRate", dissolveRate);
-            _computeShader.SetFloat("EdgeFadeIn", edgeFadeIn);
-            _computeShader.SetFloat("EdgeFadeIn", edgeFadeIn);
-            _computeShader.SetFloat("EdgeIn", edgeIn);
-            _computeShader.SetFloat("EdgeOut", edgeOut);
-            _computeShader.SetFloat("EdgeFadeOut", edgeFadeOut);
-
-            _computeShader.SetMatrix("Transform", rootMatrix);
-
-            _computeShader.SetFloat("DissolveThreshold", dissolveThreshold);
-            _computeShader.SetFloat("Time", Mathf.Repeat(Time.time * timeMultiplier, 100f)); // multiply speed and clamp time
-
-            _computeShader.Dispatch(
-                kernelID,
-                _destMapWidth,
-                _destMapHeight,
-                1
+            SetUniformAndDispatch(
+                rootMatrix,
+                dissolveRate,
+                edgeFadeIn,
+                edgeIn,
+                edgeOut,
+                edgeFadeOut,
+                timeMultiplier,
+                destMapWidth,
+                destMapHeight,
+                dissolveThreshold
             );
         }
 
