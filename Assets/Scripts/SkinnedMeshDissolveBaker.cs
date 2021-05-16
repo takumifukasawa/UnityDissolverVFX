@@ -187,6 +187,21 @@ namespace DissolverVFX {
         // _debugAlphaMapMeshRenderer.SetPropertyBlock(_debugAlphaMapMaterialPropertyBlock);
         }
 
+        public DissolveParams GetDissolveParams()
+        {               
+            DissolveParams dissolveParams;
+            dissolveParams.positionMap = _dissolveBaker.positionMap;
+            dissolveParams.normalMap = _dissolveBaker.normalMap;
+            dissolveParams.alphaMap = _dissolveBaker.alphaMap;
+            dissolveParams.dissolveMap = _dissolveMap;
+            dissolveParams.dissolveRate = _dissolveRate;
+            dissolveParams.edgeFadeIn = _edgeFadeIn;
+            dissolveParams.edgeIn = _edgeIn;
+            dissolveParams.edgeOut = _edgeOut;
+            dissolveParams.edgeFadeOut = _edgeFadeOut;
+            return dissolveParams;
+        }
+
         void OnDisable()
         {
             Dispose();

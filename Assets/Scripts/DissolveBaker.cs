@@ -2,7 +2,6 @@ using UnityEngine;
 using Unity.Collections;
 
 namespace DissolverVFX {
-
     public class DissolveBaker
     {
         private ComputeShader _computeShader;
