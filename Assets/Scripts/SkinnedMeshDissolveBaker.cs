@@ -1,12 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Unity.Collections;
-using Unity.Mathematics;
 using UnityEngine.VFX;
-using System.Linq;
-using DissolverVFX;
-
 
 namespace DissolverVFX {
     public class SkinnedMeshDissolveBaker : MonoBehaviour {
@@ -53,27 +46,7 @@ namespace DissolverVFX {
         private float _dissolveThreshold = 0.5f;
 
         // for debug
-        [SerializeField]
-        private MeshRenderer _debugPositionMapMeshRenderer;
-
-        // for debug
-        [SerializeField]
-        private MeshRenderer _debugNormalMapMeshRenderer;
-
-        // for debug
-        [SerializeField]
-        private MeshRenderer _debugAlphaMapMeshRenderer;
-
-        private MaterialPropertyBlock[] _dissolveMaterialPropertyBlocks = null;
-
-        // for debug
-        private MaterialPropertyBlock _debugPositionMapMaterialPropertyBlock;
-        private MaterialPropertyBlock _debugNormalMapMaterialPropertyBlock;
-        private MaterialPropertyBlock _debugAlphaMapMaterialPropertyBlock;
-
         private DissolveBaker _dissolveBaker;
-
-        private Mesh _targetMesh;
 
         public RenderTexture positionMap
         {
@@ -117,14 +90,6 @@ namespace DissolverVFX {
             Mesh[] meshes = new Mesh[_targetSkinnedMeshRenderers.Length];
             for(int i = 0; i < _targetSkinnedMeshRenderers.Length; i++) {
                 meshes[i] = _targetSkinnedMeshRenderers[i].sharedMesh;
-            }
-
-            // init material
-
-            _dissolveMaterialPropertyBlocks = new MaterialPropertyBlock[_targetSkinnedMeshRenderers.Length];
-            for (int i = 0; i < _targetSkinnedMeshRenderers.Length; i++)
-            {
-                _dissolveMaterialPropertyBlocks[i] = new MaterialPropertyBlock();
             }
 
             _dissolveBaker = new DissolveBaker(Instantiate(_computeShader), meshes, _dissolveMap, _destMapWidth, _destMapHeight);
