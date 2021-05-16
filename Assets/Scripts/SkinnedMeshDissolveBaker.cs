@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.VFX;
 using Utilities;
 
 namespace DissolverVFX {
@@ -35,9 +34,6 @@ namespace DissolverVFX {
         private float _timeMultiplier = 1f;
 
         [SerializeField]
-        private VisualEffect _visualEffect;
-
-        [SerializeField]
         private int _destMapWidth = 512;
 
         [SerializeField]
@@ -47,7 +43,6 @@ namespace DissolverVFX {
         private float _dissolveThreshold = 0.5f;
 
         private DissolveBaker _dissolveBaker;
-
 
         public RenderTexture positionMap
         {
