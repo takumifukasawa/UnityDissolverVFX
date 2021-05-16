@@ -7,9 +7,6 @@ namespace DissolverVFX {
         private Transform _rootTransform;
 
         [SerializeField]
-        private ComputeShader _computeShader;
-
-        [SerializeField]
         private Texture2D _dissolveMap;
 
         [SerializeField, Range(0, 1)]
@@ -93,7 +90,9 @@ namespace DissolverVFX {
 
         protected void Initialize(Mesh[] meshes)
         {
-            _dissolveBaker = new DissolveBaker(Instantiate(_computeShader), meshes, _dissolveMap, _destMapWidth, _destMapHeight);
+            ComputeShader computeShader = Instantiate(Resources.Load<ComputeShader>("ComputeShaders/BuildDissolverMap"));
+
+            _dissolveBaker = new DissolveBaker(computeShader, meshes, _dissolveMap, _destMapWidth, _destMapHeight);
 
             _dissolveBaker.Initialize();
 

@@ -36,9 +36,8 @@ namespace DissolverVFX {
         private int _destMapWidth;
         private int _destMapHeight;
 
-
         public DissolveBaker(ComputeShader computeShader, Mesh[] meshes, Texture2D dissolveMap, int destMapWidth, int destMapHeight) {
-            _computeShader = computeShader;
+           _computeShader = computeShader;
             _meshes = meshes;
             _dissolveMap = dissolveMap;
             _destMapWidth = destMapWidth;
