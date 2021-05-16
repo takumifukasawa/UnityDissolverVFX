@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEngine.VFX;
 using DissolverVFX;
 
-public class SphereVFXController : MonoBehaviour
+[RequireComponent(typeof(MeshDissolveBaker))]
+public class MeshDissolveLitVFXController : MonoBehaviour
 {
     [SerializeField]
     private MeshDissolveBaker _meshDissolveBaker;

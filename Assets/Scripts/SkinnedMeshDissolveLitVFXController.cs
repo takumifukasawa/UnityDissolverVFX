@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEngine.VFX;
 using DissolverVFX;
 
-public class WalkingVFXController : MonoBehaviour
+[RequireComponent(typeof(SkinnedMeshDissolveBaker))]
+public class SkinnedMeshDissolveLitVFXController : MonoBehaviour
 {
     [SerializeField]
     private SkinnedMeshDissolveBaker _skinnedMeshDissolveBaker;
