@@ -75,6 +75,43 @@ namespace DissolverVFX {
 
         private Mesh _targetMesh;
 
+        public RenderTexture positionMap
+        {
+            get { return _dissolveBaker.positionMap; }
+        }
+        public RenderTexture normalMap
+        {
+            get { return _dissolveBaker.normalMap; }
+        }
+        public RenderTexture alphaMap
+        {
+            get { return _dissolveBaker.alphaMap; }
+        }
+        public Texture2D dissolveMap
+        {
+            get { return _dissolveMap; }
+        }
+        public float dissolveRate
+        {
+            get { return _dissolveRate; }
+        }
+        public float edgeFadeIn
+        {
+            get { return _edgeFadeIn; }
+        }
+        public float edgeIn
+        {
+            get { return _edgeIn; }
+        }
+        public float edgeOut
+        {
+            get { return _edgeOut; }
+        }
+        public float edgeFadeOut
+        {
+            get { return _edgeFadeOut; }
+        }
+
         void Start()
         {
             Mesh[] meshes = new Mesh[_targetSkinnedMeshRenderers.Length];
@@ -97,12 +134,6 @@ namespace DissolverVFX {
 
         void Update()
         {
-            ExecCompute();
-            UpdateVFX();
-            UpdateMaterials();
-        }
-
-        void ExecCompute() {
             _dissolveBaker.Bake(
                 _targetSkinnedMeshRenderers,
                 _rootTransform.localToWorldMatrix,
@@ -122,84 +153,6 @@ namespace DissolverVFX {
             _visualEffect.SetTexture("PositionMap", _dissolveBaker.positionMap);
             _visualEffect.SetTexture("NormalMap", _dissolveBaker.normalMap);
             _visualEffect.SetTexture("AlphaMap", _dissolveBaker.alphaMap);
-        }
-
-
-        void UpdateMaterials()
-        {
-            // # DissolveMap
-            // Texture2D_54ef741b959443bd9e9b02b73af70d78
-            // # DissolveRate
-            // Vector1_63f8f76926274e71baf1152131955b40
-            // # DissolveEdgeFadeIn
-            // Vector1_3a7f40d2e0244addbc31eb5c9f2b8f9d
-            // # DissolveEdgeIn
-            // Vector1_851d11a93fec42da93e7eba4b6c35708
-            // # DissolveEdgeOut
-            // Vector1_44e9cc11c7704e7fbc993b924f68246d
-            // # DissolveEdgeFadeOut
-            // Vector1_163470858c784a7cb704a8fc07733679
-
-            for (int i = 0; i < _targetSkinnedMeshRenderers.Length; i++)
-            {
-                SkinnedMeshRenderer skinnedMeshRenderer = _targetSkinnedMeshRenderers[i];
-                MaterialPropertyBlock materialPropertyBlock = _dissolveMaterialPropertyBlocks[i];
-                skinnedMeshRenderer.GetPropertyBlock(materialPropertyBlock);
-
-                materialPropertyBlock.SetTexture(
-                    "Texture2D_54ef741b959443bd9e9b02b73af70d78",
-                    _dissolveMap
-                );
-                materialPropertyBlock.SetFloat(
-                    "Vector1_63f8f76926274e71baf1152131955b40",
-                    _dissolveRate
-                );
-                materialPropertyBlock.SetFloat(
-                    "Vector1_3a7f40d2e0244addbc31eb5c9f2b8f9d",
-                    _edgeFadeIn
-                );
-                materialPropertyBlock.SetFloat(
-                    "Vector1_851d11a93fec42da93e7eba4b6c35708",
-                    _edgeIn
-                );
-                materialPropertyBlock.SetFloat(
-                    "Vector1_44e9cc11c7704e7fbc993b924f68246d",
-                    _edgeOut
-                );
-                materialPropertyBlock.SetFloat(
-                    "Vector1_163470858c784a7cb704a8fc07733679",
-                    _edgeFadeOut
-                );
-                skinnedMeshRenderer.SetPropertyBlock(materialPropertyBlock);
-            }
-
-
-        // _debugPositionMapMeshRenderer.GetPropertyBlock(_debugPositionMapMaterialPropertyBlock);
-        // _debugPositionMapMaterialPropertyBlock.SetTexture("_BaseMap", _dissolveBaker.positionMap);
-        // _debugPositionMapMeshRenderer.SetPropertyBlock(_debugPositionMapMaterialPropertyBlock);
-
-        // _debugNormalMapMeshRenderer.GetPropertyBlock(_debugNormalMapMaterialPropertyBlock);
-        // _debugNormalMapMaterialPropertyBlock.SetTexture("_BaseMap", _dissolveBaker.normalMap);
-        // _debugNormalMapMeshRenderer.SetPropertyBlock(_debugNormalMapMaterialPropertyBlock);
-
-        // _debugAlphaMapMeshRenderer.GetPropertyBlock(_debugAlphaMapMaterialPropertyBlock);
-        // _debugAlphaMapMaterialPropertyBlock.SetTexture("_BaseMap", _dissolveBaker.alphaMap);
-        // _debugAlphaMapMeshRenderer.SetPropertyBlock(_debugAlphaMapMaterialPropertyBlock);
-        }
-
-        public DissolveParams GetDissolveParams()
-        {               
-            DissolveParams dissolveParams;
-            dissolveParams.positionMap = _dissolveBaker.positionMap;
-            dissolveParams.normalMap = _dissolveBaker.normalMap;
-            dissolveParams.alphaMap = _dissolveBaker.alphaMap;
-            dissolveParams.dissolveMap = _dissolveMap;
-            dissolveParams.dissolveRate = _dissolveRate;
-            dissolveParams.edgeFadeIn = _edgeFadeIn;
-            dissolveParams.edgeIn = _edgeIn;
-            dissolveParams.edgeOut = _edgeOut;
-            dissolveParams.edgeFadeOut = _edgeFadeOut;
-            return dissolveParams;
         }
 
         void OnDisable()

@@ -58,26 +58,23 @@ public class WalkingVFXController : MonoBehaviour
 
         // for debug
 
-        DissolveParams dissolveParams = _skinnedMeshDissolveBaker.GetDissolveParams();
-
         _debugPositionMapMeshRenderer.GetPropertyBlock(_debugPositionMapMaterialPropertyBlock);
-        _debugPositionMapMaterialPropertyBlock.SetTexture("_BaseMap", dissolveParams.positionMap);
+        _debugPositionMapMaterialPropertyBlock.SetTexture("_BaseMap", _skinnedMeshDissolveBaker.positionMap);
         _debugPositionMapMeshRenderer.SetPropertyBlock(_debugPositionMapMaterialPropertyBlock);
 
         _debugNormalMapMeshRenderer.GetPropertyBlock(_debugNormalMapMaterialPropertyBlock);
-        _debugNormalMapMaterialPropertyBlock.SetTexture("_BaseMap", dissolveParams.normalMap);
+        _debugNormalMapMaterialPropertyBlock.SetTexture("_BaseMap", _skinnedMeshDissolveBaker.normalMap);
         _debugNormalMapMeshRenderer.SetPropertyBlock(_debugNormalMapMaterialPropertyBlock);
 
         _debugAlphaMapMeshRenderer.GetPropertyBlock(_debugAlphaMapMaterialPropertyBlock);
-        _debugAlphaMapMaterialPropertyBlock.SetTexture("_BaseMap", dissolveParams.alphaMap);
+        _debugAlphaMapMaterialPropertyBlock.SetTexture("_BaseMap", _skinnedMeshDissolveBaker.alphaMap);
         _debugAlphaMapMeshRenderer.SetPropertyBlock(_debugAlphaMapMaterialPropertyBlock);
     }
 
     void UpdateVFX() {
-        DissolveParams dissolveParams = _skinnedMeshDissolveBaker.GetDissolveParams();
-        _visualEffect.SetTexture("PositionMap", dissolveParams.positionMap);
-        _visualEffect.SetTexture("NormalMap", dissolveParams.normalMap);
-        _visualEffect.SetTexture("AlphaMap", dissolveParams.alphaMap);
+        _visualEffect.SetTexture("PositionMap", _skinnedMeshDissolveBaker.positionMap);
+        _visualEffect.SetTexture("NormalMap", _skinnedMeshDissolveBaker.normalMap);
+        _visualEffect.SetTexture("AlphaMap", _skinnedMeshDissolveBaker.alphaMap);
     }
 
     void UpdateMaterials()
@@ -95,8 +92,6 @@ public class WalkingVFXController : MonoBehaviour
         // # DissolveEdgeFadeOut
         // Vector1_163470858c784a7cb704a8fc07733679
 
-        DissolveParams dissolveParams = _skinnedMeshDissolveBaker.GetDissolveParams();
-
         for (int i = 0; i < _targetSkinnedMeshRenderers.Length; i++)
         {
             SkinnedMeshRenderer skinnedMeshRenderer = _targetSkinnedMeshRenderers[i];
@@ -105,27 +100,27 @@ public class WalkingVFXController : MonoBehaviour
 
             materialPropertyBlock.SetTexture(
                 "Texture2D_54ef741b959443bd9e9b02b73af70d78",
-                dissolveParams.dissolveMap
+                _skinnedMeshDissolveBaker.dissolveMap
             );
             materialPropertyBlock.SetFloat(
                 "Vector1_63f8f76926274e71baf1152131955b40",
-                dissolveParams.dissolveRate
+                _skinnedMeshDissolveBaker.dissolveRate
             );
             materialPropertyBlock.SetFloat(
                 "Vector1_3a7f40d2e0244addbc31eb5c9f2b8f9d",
-                dissolveParams.edgeFadeIn
+                _skinnedMeshDissolveBaker.edgeFadeIn
             );
             materialPropertyBlock.SetFloat(
                 "Vector1_851d11a93fec42da93e7eba4b6c35708",
-                dissolveParams.edgeIn
+                _skinnedMeshDissolveBaker.edgeIn
             );
             materialPropertyBlock.SetFloat(
                 "Vector1_44e9cc11c7704e7fbc993b924f68246d",
-                dissolveParams.edgeOut
+                _skinnedMeshDissolveBaker.edgeOut
             );
             materialPropertyBlock.SetFloat(
                 "Vector1_163470858c784a7cb704a8fc07733679",
-                dissolveParams.edgeFadeOut
+                _skinnedMeshDissolveBaker.edgeFadeOut
             );
             skinnedMeshRenderer.SetPropertyBlock(materialPropertyBlock);
         }
