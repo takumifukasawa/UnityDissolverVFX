@@ -3,13 +3,24 @@ using UnityEngine;
 namespace DissolverVFX {
     public class SkinnedMeshDissolveBaker : DissolveBakerBase {
         [SerializeField]
-        private SkinnedMeshRenderer[] _targetSkinnedMeshRenderers = null;
+        private GameObject[] _targetSkinnedMeshObjects = null;
+
+        private SkinnedMeshRenderer[] _skinnedMeshRenderers;
+
+        public SkinnedMeshRenderer[] skinnedMeshRenderers
+        {
+            get { return _skinnedMeshRenderers; }
+        }
 
         void Start()
         {
-            Mesh[] meshes = new Mesh[_targetSkinnedMeshRenderers.Length];
-            for(int i = 0; i < _targetSkinnedMeshRenderers.Length; i++) {
-                meshes[i] = _targetSkinnedMeshRenderers[i].sharedMesh;
+            int counts = _targetSkinnedMeshObjects.Length;
+            Mesh[] meshes = new Mesh[counts];
+            _skinnedMeshRenderers = new SkinnedMeshRenderer[counts];
+            for(int i = 0; i < counts; i++) {
+                SkinnedMeshRenderer skinnedMeshRenderer = _targetSkinnedMeshObjects[i].GetComponent<SkinnedMeshRenderer>();
+                _skinnedMeshRenderers[i] = skinnedMeshRenderer;
+                meshes[i] = skinnedMeshRenderer.sharedMesh;
             }
 
             Initialize(meshes);
@@ -17,7 +28,7 @@ namespace DissolverVFX {
 
         void Update()
         {
-            Exec(_targetSkinnedMeshRenderers);
+            Exec(_skinnedMeshRenderers);
         }
     }
 }
