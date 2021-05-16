@@ -188,8 +188,6 @@ namespace DissolverVFX {
             );
         }
 
-
-
         public void Bake(
             Mesh[] meshes,
             Matrix4x4 rootMatrix,
@@ -230,7 +228,7 @@ namespace DissolverVFX {
         }
 
         public void Bake(
-            SkinnedMeshRenderer[] meshes,
+            SkinnedMeshRenderer[] skinnedMeshRenderers,
             Matrix4x4 rootMatrix,
             float dissolveRate,
             float edgeFadeIn,
@@ -246,9 +244,9 @@ namespace DissolverVFX {
             int triangleOffset = 0;
             int uvOffset = 0;
 
-            foreach (SkinnedMeshRenderer mesh in meshes)
+            foreach (SkinnedMeshRenderer skinnedMeshRenderer in skinnedMeshRenderers)
             {
-                int[] result = CalcBuffer(mesh, vertexOffset, triangleOffset, uvOffset);
+                int[] result = CalcBuffer(skinnedMeshRenderer, vertexOffset, triangleOffset, uvOffset);
                 vertexOffset += result[0];
                 triangleOffset += result[1];
                 uvOffset += result[2];
