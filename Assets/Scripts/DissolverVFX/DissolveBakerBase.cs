@@ -138,6 +138,7 @@ namespace DissolverVFX {
             return obj;
         }
 
+        // for mesh
         protected void Exec(Mesh[] meshes)
         {
             _dissolveBaker.Bake(
@@ -172,6 +173,7 @@ namespace DissolverVFX {
             }
         }
 
+        // for skinned mesh
         protected void Exec(SkinnedMeshRenderer[] skinnedMeshRenderers)
         {
             _dissolveBaker.Bake(
