@@ -16,24 +16,7 @@ public class MeshDissolveLitVFXController : MonoBehaviour
     [SerializeField]
     private VisualEffect _visualEffect;
 
-    // // for debug
-    // [SerializeField]
-    // private MeshRenderer _debugPositionMapMeshRenderer;
-
-    // // for debug
-    // [SerializeField]
-    // private MeshRenderer _debugNormalMapMeshRenderer;
-
-    // // for debug
-    // [SerializeField]
-    // private MeshRenderer _debugAlphaMapMeshRenderer;
-
     private MaterialPropertyBlock[] _dissolveMaterialPropertyBlocks = null;
-
-    // // for debug
-    // private MaterialPropertyBlock _debugPositionMapMaterialPropertyBlock;
-    // private MaterialPropertyBlock _debugNormalMapMaterialPropertyBlock;
-    // private MaterialPropertyBlock _debugAlphaMapMaterialPropertyBlock;
 
     void Start()
     {
@@ -44,32 +27,12 @@ public class MeshDissolveLitVFXController : MonoBehaviour
         {
             _dissolveMaterialPropertyBlocks[i] = new MaterialPropertyBlock();
         }
-
-        // // for debug
-
-        // _debugPositionMapMaterialPropertyBlock = new MaterialPropertyBlock();
-        // _debugNormalMapMaterialPropertyBlock = new MaterialPropertyBlock();
-        // _debugAlphaMapMaterialPropertyBlock = new MaterialPropertyBlock();
     }
 
     void Update()
     {
         UpdateVFX();
         UpdateMaterials();
-
-        // // for debug
-
-        // _debugPositionMapMeshRenderer.GetPropertyBlock(_debugPositionMapMaterialPropertyBlock);
-        // _debugPositionMapMaterialPropertyBlock.SetTexture("_BaseMap", _skinnedMeshDissolveBaker.positionMap);
-        // _debugPositionMapMeshRenderer.SetPropertyBlock(_debugPositionMapMaterialPropertyBlock);
-
-        // _debugNormalMapMeshRenderer.GetPropertyBlock(_debugNormalMapMaterialPropertyBlock);
-        // _debugNormalMapMaterialPropertyBlock.SetTexture("_BaseMap", _skinnedMeshDissolveBaker.normalMap);
-        // _debugNormalMapMeshRenderer.SetPropertyBlock(_debugNormalMapMaterialPropertyBlock);
-
-        // _debugAlphaMapMeshRenderer.GetPropertyBlock(_debugAlphaMapMaterialPropertyBlock);
-        // _debugAlphaMapMaterialPropertyBlock.SetTexture("_BaseMap", _skinnedMeshDissolveBaker.alphaMap);
-        // _debugAlphaMapMeshRenderer.SetPropertyBlock(_debugAlphaMapMaterialPropertyBlock);
     }
 
     void UpdateVFX() {
