@@ -1,3 +1,8 @@
+// ----------------------------------------------------------------------------------
+// ref:
+// https://github.com/keijiro/Smrvfx
+// ----------------------------------------------------------------------------------
+
 using UnityEngine;
 using Unity.Collections;
 
@@ -6,8 +11,6 @@ namespace DissolverVFX {
     {
         private ComputeShader _computeShader;
         private Mesh[] _meshes;
-
-        // private Mesh _targetMesh;
 
         private RenderTexture _positionMap;
         private RenderTexture _normalMap;
@@ -45,6 +48,9 @@ namespace DissolverVFX {
         }
 
         public void Initialize() {
+
+            // init maps
+
             _positionMap = CreateTexture(
                 _destMapWidth,
                 _destMapHeight,
@@ -103,24 +109,17 @@ namespace DissolverVFX {
             _computeShader.SetInt("DissolveMapHeight", _dissolveMap.height);
             _computeShader.SetInt("DestMapWidth", _destMapWidth);
             _computeShader.SetInt("DestMapHeight", _destMapHeight);
-
-            // ExecCompute();
         }
 
-        int[] SetBuffer(Mesh mesh, int vertexOffset, int triangleOffset, int uvOffset) {
+        int[] SetVertexBuffersData(Mesh mesh, int vertexOffset, int triangleOffset, int uvOffset) {
             using (Mesh.MeshDataArray dataArray = Mesh.AcquireReadOnlyMeshData(mesh))
             {
                 Mesh.MeshData data = dataArray[0];
                 int vertexCount = data.vertexCount;
-                // Debug.Log("using vertex count");
-                // Debug.Log(vertexCount);
-                // int triangleCount = _targetMesh.triangles.Length;
                 int triangleCount = mesh.triangles.Length;
-                // NOTE: equal vertex count
                 int uvCount = vertexCount;
 
                 using (NativeArray<Vector3> positionArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
-                // using(NativeArray<Vector3> normalArray = new NativeArray<Vector3>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
                 using (NativeArray<int> triangleArray = new NativeArray<int>(triangleCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
                 using (NativeArray<Vector2> uvArray = new NativeArray<Vector2>(uvCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
                 {
@@ -141,20 +140,7 @@ namespace DissolverVFX {
             }
         }
 
-        int[] CalcBuffer(SkinnedMeshRenderer skinnedMeshRenderer, int vertexOffset, int triangleOffset, int uvOffset)
-        {
-            Mesh _targetMesh = new Mesh();
-            skinnedMeshRenderer.BakeMesh(_targetMesh);
-            return SetBuffer(_targetMesh, vertexOffset, triangleOffset, uvOffset);
-        }
-
-        int[] CalcBuffer(Mesh mesh, int vertexOffset, int triangleOffset, int uvOffset)
-        {
-            return SetBuffer(mesh, vertexOffset, triangleOffset, uvOffset);
-            // skinnedMeshRenderer.BakeMesh(_targetMesh);
-        }
-
-        void SetUniformAndDispatch(
+        void SetUniformAndDispatchComputeShader(
             Matrix4x4 rootMatrix,
             float dissolveRate,
             float edgeFadeIn,
@@ -187,6 +173,7 @@ namespace DissolverVFX {
             );
         }
 
+        // for mesh
         public void Bake(
             Mesh[] meshes,
             Matrix4x4 rootMatrix,
@@ -206,13 +193,13 @@ namespace DissolverVFX {
 
             foreach (Mesh mesh in meshes)
             {
-                int[] result = CalcBuffer(mesh, vertexOffset, triangleOffset, uvOffset);
+                int[] result = SetVertexBuffersData(mesh, vertexOffset, triangleOffset, uvOffset);
                 vertexOffset += result[0];
                 triangleOffset += result[1];
                 uvOffset += result[2];
             }
 
-            SetUniformAndDispatch(
+            SetUniformAndDispatchComputeShader(
                 rootMatrix,
                 dissolveRate,
                 edgeFadeIn,
@@ -226,6 +213,7 @@ namespace DissolverVFX {
             );
         }
 
+        // for skinned mesh
         public void Bake(
             SkinnedMeshRenderer[] skinnedMeshRenderers,
             Matrix4x4 rootMatrix,
@@ -243,15 +231,18 @@ namespace DissolverVFX {
             int triangleOffset = 0;
             int uvOffset = 0;
 
+            Mesh targetMesh = new Mesh();
+
             foreach (SkinnedMeshRenderer skinnedMeshRenderer in skinnedMeshRenderers)
             {
-                int[] result = CalcBuffer(skinnedMeshRenderer, vertexOffset, triangleOffset, uvOffset);
+                skinnedMeshRenderer.BakeMesh(targetMesh);
+                int[] result = SetVertexBuffersData(targetMesh, vertexOffset, triangleOffset, uvOffset);
                 vertexOffset += result[0];
                 triangleOffset += result[1];
                 uvOffset += result[2];
             }
 
-            SetUniformAndDispatch(
+            SetUniformAndDispatchComputeShader(
                 rootMatrix,
                 dissolveRate,
                 edgeFadeIn,
@@ -265,7 +256,7 @@ namespace DissolverVFX {
             );
         }
 
-        RenderTexture CreateTexture(int width, int height, UnityEngine.RenderTextureFormat format)
+        static RenderTexture CreateTexture(int width, int height, UnityEngine.RenderTextureFormat format)
         {
             RenderTexture map = new RenderTexture(
                 width,
@@ -280,20 +271,6 @@ namespace DissolverVFX {
             return map;
         }
 
-        bool IsValid() {
-            return (
-                _trianglesBuffer != null &&
-                _verticesBuffer != null &&
-                _uvBuffer != null &&
-                _positionMap != null &&
-                _normalMap != null && 
-                _alphaMap != null
-                // _targetMesh != null
-            );
-        }
-
-        // ref:
-        // https://github.com/keijiro/Smrvfx/blob/898ced94e22c28fca591a1a268fdb034dec43292/Packages/jp.keijiro.smrvfx/Runtime/Internal/Utility.cs#L15
         void DestroyObj(Object o)
         {
             if (o == null) return;
