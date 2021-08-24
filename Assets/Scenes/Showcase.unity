@@ -330,7 +330,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &567549651
 Transform:
   m_ObjectHideFlags: 0
@@ -343,7 +343,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!320 &567549652
 PlayableDirector:
@@ -593,9 +593,9 @@ MonoBehaviour:
   _edgeOut: 0.55
   _edgeFadeOut: 0.6
   _timeMultiplier: 1
-  _destMapWidth: 16
-  _destMapHeight: 16
-  _dissolveThreshold: 0.545
+  _destMapWidth: 32
+  _destMapHeight: 32
+  _dissolveThreshold: 0.5
   _enableDebug: 0
   _targetSkinnedMeshRenderers:
   - {fileID: 787497903}
@@ -646,14 +646,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 895316110}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.34, y: 0, z: 0}
+  m_LocalPosition: {x: -2.98, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1307152534}
   - {fileID: 1177156303}
   - {fileID: 1381361512}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1074881606
 PrefabInstance:
@@ -2557,8 +2557,8 @@ MonoBehaviour:
   _edgeOut: 0.52
   _edgeFadeOut: 0.54
   _timeMultiplier: 1
-  _destMapWidth: 16
-  _destMapHeight: 16
+  _destMapWidth: 32
+  _destMapHeight: 32
   _dissolveThreshold: 0.5
   _enableDebug: 0
   _targetMeshFilters:
@@ -2631,8 +2631,8 @@ MonoBehaviour:
   _edgeOut: 0.52
   _edgeFadeOut: 0.54
   _timeMultiplier: 1
-  _destMapWidth: 16
-  _destMapHeight: 16
+  _destMapWidth: 32
+  _destMapHeight: 32
   _dissolveThreshold: 0.5
   _enableDebug: 0
   _targetMeshFilters:
@@ -3031,14 +3031,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1875126551}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.46, y: 0, z: 0}
+  m_LocalPosition: {x: -1.34, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1335553182}
   - {fileID: 313532234}
   - {fileID: 1767914830}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &2042481565 stripped
 SkinnedMeshRenderer:
@@ -3153,5 +3153,5 @@ Transform:
   - {fileID: 634527619}
   - {fileID: 1202582219}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
