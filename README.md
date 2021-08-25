@@ -1,4 +1,4 @@
-# DissolverVFX 
+# UnityDissolverVFX 
 
 Emit VFX Particle on World Position of Dissolved Edge.
 
