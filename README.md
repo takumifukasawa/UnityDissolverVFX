@@ -15,3 +15,7 @@ for Skinned Mesh
 - unity version: 2020.3.6f1
   
 - pipeline: URP
+
+## Article
+
+[https://takumifukasawa.hatenablog.com/entry/unity-dissolver-vfx](https://takumifukasawa.hatenablog.com/entry/unity-dissolver-vfx)
